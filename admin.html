@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump Master - User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-box { background: #eee; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div id="login-container">
+        <h2>User Dashboard</h2>
+        <div id="user-info"></div>
+        
+        <div class="stats-box">
+            <h3>All-Time High Score</h3>
+            <p id="high-score">0</p>
+        </div>
+
+        <div class="stats-box">
+            <h3>Last 3 Games</h3>
+            <ul id="history-list"></ul>
+        </div>
+
+        <button onclick="window.location.href='index.html'">Back to Game</button>
+        <button onclick="logout()" style="background-color: #333;">Logout</button>
+    </div>
+
+    <script>
+        // Load Data from LocalStorage
+        const user = JSON.parse(localStorage.getItem('game001_user'));
+        const highScore = localStorage.getItem('game001_highscore') || 0;
+        const history = JSON.parse(localStorage.getItem('game001_history')) || [];
+
+        if (user) {
+            document.getElementById('user-info').innerHTML = `
+                <p><strong>Name:</strong> ${user.name}</p>
+                <p><strong>ID:</strong> ${user.pid}</p>
+            `;
+        } else {
+            document.getElementById('user-info').innerText = "No active session found.";
+        }
+
+        document.getElementById('high-score').innerText = highScore;
+
+        const list = document.getElementById('history-list');
+        if (history.length === 0) {
+            list.innerHTML = "<li>No games played yet.</li>";
+        } else {
+            history.forEach((score, index) => {
+                const li = document.createElement('li');
+                li.innerText = `Game ${index + 1}: ${score} pts`;
+                list.appendChild(li);
+            });
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
