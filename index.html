@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jump Master (game002)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-container">
+        <h1>JUMP MASTER</h1>
+        <p>Enter your details to begin</p>
+        
+        <div class="input-group">
+            <label>Name (Alphabets Only)</label>
+            <input type="text" id="username" placeholder="Enter Name">
+        </div>
+
+        <div class="input-group">
+            <label>Poornata ID (Numbers Only)</label>
+            <input type="number" id="poornataId" placeholder="Enter ID">
+        </div>
+
+        <button id="start-btn">START GAME</button>
+        <p id="error-msg" class="hidden"></p>
+        <p class="small-link"><a href="admin.html">View History</a></p>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <span id="score-display">Score: 0</span>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
