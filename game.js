@@ -3,8 +3,6 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio |
 
-| 1;
-
 const LOGIC_WIDTH = 400;
 const LOGIC_HEIGHT = 600;
 const GRAVITY = 0.4;
