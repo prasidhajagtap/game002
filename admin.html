@@ -29,37 +29,39 @@
     </div>
 
     <script>
-        // Load Data from LocalStorage
-        const user = JSON.parse(localStorage.getItem('game001_user'));
-        const highScore = localStorage.getItem('game001_highscore') || 0;
-        const history = JSON.parse(localStorage.getItem('game001_history')) || [];
+        // Proposed Admin/Dashboard Logic
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('game001_history')) |
 
-        if (user) {
-            document.getElementById('user-info').innerHTML = `
-                <p><strong>Name:</strong> ${user.name}</p>
-                <p><strong>ID:</strong> ${user.pid}</p>
-            `;
-        } else {
-            document.getElementById('user-info').innerText = "No active session found.";
-        }
+|;
+    const highscore = localStorage.getItem('game001_highscore') |
 
-        document.getElementById('high-score').innerText = highScore;
+| 0;
+    const listElement = document.getElementById('history-list');
+    
+    document.getElementById('display-highscore').innerText = highscore;
 
-        const list = document.getElementById('history-list');
-        if (history.length === 0) {
-            list.innerHTML = "<li>No games played yet.</li>";
-        } else {
-            history.forEach((score, index) => {
-                const li = document.createElement('li');
-                li.innerText = `Game ${index + 1}: ${score} pts`;
-                list.appendChild(li);
-            });
-        }
+    if (history.length === 0) {
+        listElement.innerHTML = '<tr><td colspan="2">No games played yet.</td></tr>';
+        return;
+    }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        }
+    listElement.innerHTML = history.map((score, index) => `
+        <tr>
+            <td>Game ${index + 1}</td>
+            <td>${score} pts</td>
+        </tr>
+    `).join('');
+}
+
+function resetSession() {
+    if (confirm('Are you sure you want to log out and clear all data?')) {
+        localStorage.removeItem('game001_user');
+        localStorage.removeItem('game001_expiry');
+        // We preserve highscore and history but clear authentication
+        window.location.href = 'index.html';
+    }
+}
     </script>
 </body>
 </html>
