@@ -44,6 +44,7 @@ function handleInput(e) {
 function stopMovement() {
     player.vx = 0;
 }
+
 function updatePhysics() {
     player.vy += GRAVITY;
     player.y += player.vy;
@@ -78,6 +79,16 @@ function updatePhysics() {
         platforms.forEach(p => { p.y += scrollAmount; });
     }
 }
+
+const physicsSteps = 2;
+function gameLoop(timestamp) {
+    for(let i = 0; i < physicsSteps; i++) {
+        updatePhysics(1 / (60 * physicsSteps));
+    }
+    render();
+    requestAnimationFrame(gameLoop);
+}
+
 window.addEventListener('touchstart', handleInput, { passive: false });
 window.addEventListener('touchend', stopMovement);
 window.addEventListener('mousedown', handleInput);
