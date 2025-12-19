@@ -89,6 +89,26 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+// Ensure this is at the bottom of your file to catch the button click
+document.getElementById('start-btn').addEventListener('click', () => {
+    const name = document.getElementById('username').value;
+    const pid = document.getElementById('poornataId').value;
+
+    // Strict validation based on corporate requirements
+    if (nameRegex.test(name) && pidRegex.test(pid)) {
+        document.getElementById('login-container').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+        
+        // CRITICAL: Must resize and initialize before the loop starts
+        resizeCanvas(); 
+        initGame(); 
+    } else {
+        const error = document.getElementById('error-msg');
+        error.innerText = "Please enter a valid Name (Letters) and ID (Numbers).";
+        error.classList.remove('hidden');
+    }
+});
+
 window.addEventListener('touchstart', handleInput, { passive: false });
 window.addEventListener('touchend', stopMovement);
 window.addEventListener('mousedown', handleInput);
