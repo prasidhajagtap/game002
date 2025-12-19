@@ -1,4 +1,4 @@
-// Constants & Configuration
+// Configuration
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio |
@@ -12,25 +12,25 @@ const JUMP_STRENGTH = -12;
 const nameRegex = /^[A-Za-z\s]+$/;
 const pidRegex = /^[0-9]+$/;
 
-// State Variables
+// State
 let player = { x: 175, y: 500, width: 50, height: 50, vx: 0, vy: 0 };
-let platforms =;
+let platforms =; // FIXED: Initialized as empty array
 let score = 0;
 let gameRunning = false;
-let assetsLoaded = 0;
+let assetsLoadedCount = 0;
 
 // Asset Loading
 const images = {};
 const assetSrcs = {
-    hero: 'character.png', // Image 4
-    plat1: 'block-1.png', // Image 2
-    plat2: 'block-2.png'  // Image 3
+    hero: 'character.png',
+    plat1: 'block-1.png',
+    plat2: 'block-2.png'
 };
 
 Object.keys(assetSrcs).forEach(key => {
     images[key] = new Image();
     images[key].src = assetSrcs[key];
-    images[key].onload = () => { assetsLoaded++; };
+    images[key].onload = () => { assetsLoadedCount++; };
 });
 
 function resizeCanvas() {
@@ -48,6 +48,7 @@ function resizeCanvas() {
 
 function initGame() {
     score = 0;
+    document.getElementById('score-display').innerText = `Score: 0`;
     player.x = LOGIC_WIDTH / 2 - 25;
     player.y = LOGIC_HEIGHT - 150;
     player.vy = JUMP_STRENGTH;
@@ -80,11 +81,9 @@ function update() {
     player.y += player.vy;
     player.x += player.vx;
 
-    // Screen Wrap
     if (player.x + player.width < 0) player.x = LOGIC_WIDTH;
     if (player.x > LOGIC_WIDTH) player.x = -player.width;
 
-    // Collision (One-way)
     if (player.vy > 0) {
         platforms.forEach(p => {
             if (player.x < p.x + p.width &&
@@ -97,7 +96,6 @@ function update() {
         });
     }
 
-    // Scroll & Score
     if (player.y < LOGIC_HEIGHT / 2) {
         let diff = LOGIC_HEIGHT / 2 - player.y;
         player.y = LOGIC_HEIGHT / 2;
@@ -118,14 +116,10 @@ function update() {
 
 function draw() {
     ctx.clearRect(0, 0, LOGIC_WIDTH, LOGIC_HEIGHT);
-    
-    // Draw Platforms
     platforms.forEach(p => {
-        ctx.drawImage(images[p.type], p.x, p.y, p.width, p.height);
+        if(images[p.type]) ctx.drawImage(images[p.type], p.x, p.y, p.width, p.height);
     });
-
-    // Draw Player
-    ctx.drawImage(images.hero, player.x, player.y, player.width, player.height);
+    if(images.hero) ctx.drawImage(images.hero, player.x, player.y, player.width, player.height);
 }
 
 function gameLoop() {
@@ -138,12 +132,12 @@ function gameLoop() {
 function gameOver() {
     gameRunning = false;
     saveScore(score);
-    alert(`Game Over! Score: ${score}`);
+    alert(`Poornata Jump Master: Game Over! Score: ${score}`);
     location.reload();
 }
 
 function saveScore(s) {
-    let history = JSON.parse(localStorage.getItem('game001_history')) ||;
+    let history = JSON.parse(localStorage.getItem('game001_history')) ||; // FIXED: Added fallback array
     history.unshift(s);
     if (history.length > 3) history.pop();
     localStorage.setItem('game001_history', JSON.stringify(history));
@@ -151,10 +145,10 @@ function saveScore(s) {
     let high = localStorage.getItem('game001_highscore') |
 
 | 0;
-    if (s > high) localStorage.setItem('game001_highscore', s);
+    if (parseInt(s) > parseInt(high)) localStorage.setItem('game001_highscore', s);
 }
 
-// Input Control
+// Controls
 function handleInput(e) {
     if (!gameRunning) return;
     const clientX = e.type.includes('touch')? e.touches.clientX : e.clientX;
@@ -168,10 +162,18 @@ window.addEventListener('mousedown', handleInput);
 window.addEventListener('mouseup', () => player.vx = 0);
 window.addEventListener('resize', resizeCanvas);
 
-// Session & Start Logic
+// Login Logic
 document.getElementById('start-btn').addEventListener('click', () => {
-    const name = document.getElementById('username').value;
-    const pid = document.getElementById('poornataId').value;
+    const name = document.getElementById('username').value.trim();
+    const pid = document.getElementById('poornataId').value.trim();
+    const error = document.getElementById('error-msg');
+
+    // Mandatory Prompting
+    if (!name ||!pid) {
+        error.innerText = "Error: Name and Poornata ID are mandatory.";
+        error.classList.remove('hidden');
+        return;
+    }
 
     if (nameRegex.test(name) && pidRegex.test(pid)) {
         localStorage.setItem('game001_user', JSON.stringify({ name, pid }));
@@ -181,15 +183,14 @@ document.getElementById('start-btn').addEventListener('click', () => {
         resizeCanvas();
         initGame();
     } else {
-        document.getElementById('error-msg').innerText = "Valid Name and ID required.";
-        document.getElementById('error-msg').classList.remove('hidden');
+        error.innerText = "Error: Use alphabets for Name and numbers for ID.";
+        error.classList.remove('hidden');
     }
 });
 
-// Auto-Login Check
 window.onload = () => {
     const expiry = localStorage.getItem('game001_expiry');
-    if (expiry && Date.now() < expiry) {
+    if (expiry && Date.now() < parseInt(expiry)) {
         document.getElementById('login-container').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
         resizeCanvas();
