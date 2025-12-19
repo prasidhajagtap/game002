@@ -1,5 +1,5 @@
 :root {
-    --action-orange: #ff6600; /* Seamex Brand Accent */
+    --action-orange: #ff6600;
     --clean-grey: #f4f4f4;
     --sky-blue: #87CEEB;
 }
@@ -10,12 +10,12 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100dvh; /* Fix for mobile address bar jumping */
+    height: 100dvh;
     overflow: hidden;
-    position: fixed; /* Prevents overscroll on iOS */
+    position: fixed;
     font-family: 'Arial', sans-serif;
     background-color: var(--clean-grey);
-    touch-action: none; /* Disables browser gestures */
+    touch-action: none;
 }
 
 #login-container {
@@ -36,13 +36,14 @@ html, body {
     text-align: center;
 }
 
+.login-box h1 { font-size: 1.5rem; margin-bottom: 10px; color: var(--action-orange); }
+
 .input-group { margin-bottom: 20px; text-align: left; }
 
-/* Force 16px font to prevent iOS auto-zoom on focus */
 input {
     width: 100%;
     padding: 12px;
-    font-size: 16px;
+    font-size: 16px; /* Essential for iOS to prevent auto-zoom */
     border: 1px solid #ccc;
     border-radius: 6px;
     margin-top: 5px;
@@ -70,18 +71,19 @@ button:active { filter: brightness(0.9); }
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 canvas {
     display: block;
-    image-rendering: -webkit-optimize-contrast; /* Sharpen PNGs on iOS */
+    image-rendering: -webkit-optimize-contrast;
 }
 
 #ui-layer {
     position: absolute;
     top: env(safe-area-inset-top, 20px);
     left: env(safe-area-inset-left, 20px);
-    pointer-events: none; /* Allows touches to pass through to game */
+    pointer-events: none;
     color: white;
     font-size: 24px;
     font-weight: bold;
@@ -89,6 +91,6 @@ canvas {
 }
 
 .hidden { display: none!important; }
-#error-msg { color: #d9534f; margin-top: 10px; font-size: 14px; }
+#error-msg { color: #d9534f; margin-top: 15px; font-weight: bold; font-size: 14px; }
 .small-link { margin-top: 20px; font-size: 14px; }
-.small-link a { color: #666; text-decoration: none; }
+.small-link a { color: #666; text-decoration: none; border-bottom: 1px solid #ccc; }
