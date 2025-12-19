@@ -1,115 +1,198 @@
-// Targeted Refactoring for game.js
+// Constants & Configuration
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio |
 
 | 1;
 
-// Configuration Constants
 const LOGIC_WIDTH = 400;
 const LOGIC_HEIGHT = 600;
-const JUMP_STRENGTH = -12;
 const GRAVITY = 0.4;
+const JUMP_STRENGTH = -12;
+const nameRegex = /^[A-Za-z\s]+$/;
+const pidRegex = /^[0-9]+$/;
+
+// State Variables
+let player = { x: 175, y: 500, width: 50, height: 50, vx: 0, vy: 0 };
+let platforms =;
+let score = 0;
+let gameRunning = false;
+let assetsLoaded = 0;
+
+// Asset Loading
+const images = {};
+const assetSrcs = {
+    hero: 'character.png', // Image 4
+    plat1: 'block-1.png', // Image 2
+    plat2: 'block-2.png'  // Image 3
+};
+
+Object.keys(assetSrcs).forEach(key => {
+    images[key] = new Image();
+    images[key].src = assetSrcs[key];
+    images[key].onload = () => { assetsLoaded++; };
+});
 
 function resizeCanvas() {
-    // Determine the best visual size for the canvas
     const displayWidth = Math.min(window.innerWidth, 450);
     const displayHeight = window.innerHeight;
-
-    // Set the drawing buffer to physical resolution
+    
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
-
-    // Set the CSS size to the logical viewport size
     canvas.style.width = displayWidth + 'px';
     canvas.style.height = displayHeight + 'px';
 
-    // Scale the context so logic can remain based on LOGIC_WIDTH/HEIGHT
-    const scaleFactor = displayWidth / LOGIC_WIDTH;
-    ctx.setTransform(dpr * scaleFactor, 0, 0, dpr * scaleFactor, 0, 0);
+    const scale = (displayWidth * dpr) / LOGIC_WIDTH;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
 }
 
-// Input Handling with Touch Event Fixes
-function handleInput(e) {
-    e.preventDefault(); // Stop accidental scrolling
-    const clientX = e.type.includes('touch')? e.touches.clientX : e.clientX;
-    const canvasRect = canvas.getBoundingClientRect();
-    const relativeX = clientX - canvasRect.left;
-    
-    // Movement Logic
-    player.vx = relativeX < (canvasRect.width / 2)? -7 : 7;
-}
-
-// Listen for input release to prevent "sticky" movement
-function stopMovement() {
+function initGame() {
+    score = 0;
+    player.x = LOGIC_WIDTH / 2 - 25;
+    player.y = LOGIC_HEIGHT - 150;
+    player.vy = JUMP_STRENGTH;
     player.vx = 0;
+    
+    platforms =;
+    // Starter Platform
+    platforms.push({ x: LOGIC_WIDTH / 2 - 40, y: LOGIC_HEIGHT - 50, width: 80, height: 30, type: 'plat1' });
+    
+    for(let i = 1; i < 6; i++) {
+        spawnPlatform(LOGIC_HEIGHT - (i * 120));
+    }
+    
+    gameRunning = true;
+    requestAnimationFrame(gameLoop);
 }
 
-function updatePhysics() {
+function spawnPlatform(y) {
+    platforms.push({
+        x: Math.random() * (LOGIC_WIDTH - 80),
+        y: y,
+        width: 80,
+        height: 30,
+        type: Math.random() > 0.5? 'plat1' : 'plat2'
+    });
+}
+
+function update() {
     player.vy += GRAVITY;
     player.y += player.vy;
     player.x += player.vx;
 
-    // Screen Wrapping Logic
-    if (player.x + 50 < 0) player.x = LOGIC_WIDTH;
-    if (player.x > LOGIC_WIDTH) player.x = -50;
+    // Screen Wrap
+    if (player.x + player.width < 0) player.x = LOGIC_WIDTH;
+    if (player.x > LOGIC_WIDTH) player.x = -player.width;
 
-    // One-Way Collision detection
+    // Collision (One-way)
     if (player.vy > 0) {
         platforms.forEach(p => {
-            if (
-                player.x < p.x + p.width &&
-                player.x + 50 > p.x &&
-                player.y + 50 > p.y &&
-                player.y + 50 < p.y + p.height + 15 // Tolerance slop
-            ) {
-                // Landing detected
-                player.y = p.y - 50; // Snap to top
+            if (player.x < p.x + p.width &&
+                player.x + player.width > p.x &&
+                player.y + player.height > p.y &&
+                player.y + player.height < p.y + p.height + 15) {
+                player.y = p.y - player.height;
                 player.vy = JUMP_STRENGTH;
             }
         });
     }
 
-    // World Scroll Trigger
+    // Scroll & Score
     if (player.y < LOGIC_HEIGHT / 2) {
-        let scrollAmount = LOGIC_HEIGHT / 2 - player.y;
+        let diff = LOGIC_HEIGHT / 2 - player.y;
         player.y = LOGIC_HEIGHT / 2;
-        score += Math.floor(scrollAmount);
+        score += Math.floor(diff);
+        document.getElementById('score-display').innerText = `Score: ${score}`;
         
-        platforms.forEach(p => { p.y += scrollAmount; });
+        platforms.forEach(p => {
+            p.y += diff;
+            if (p.y > LOGIC_HEIGHT) {
+                platforms.splice(platforms.indexOf(p), 1);
+                spawnPlatform(0);
+            }
+        });
     }
+
+    if (player.y > LOGIC_HEIGHT) gameOver();
 }
 
-const physicsSteps = 2;
-function gameLoop(timestamp) {
-    for(let i = 0; i < physicsSteps; i++) {
-        updatePhysics(1 / (60 * physicsSteps));
-    }
-    render();
+function draw() {
+    ctx.clearRect(0, 0, LOGIC_WIDTH, LOGIC_HEIGHT);
+    
+    // Draw Platforms
+    platforms.forEach(p => {
+        ctx.drawImage(images[p.type], p.x, p.y, p.width, p.height);
+    });
+
+    // Draw Player
+    ctx.drawImage(images.hero, player.x, player.y, player.width, player.height);
+}
+
+function gameLoop() {
+    if (!gameRunning) return;
+    update();
+    draw();
     requestAnimationFrame(gameLoop);
 }
 
-// Ensure this is at the bottom of your file to catch the button click
+function gameOver() {
+    gameRunning = false;
+    saveScore(score);
+    alert(`Game Over! Score: ${score}`);
+    location.reload();
+}
+
+function saveScore(s) {
+    let history = JSON.parse(localStorage.getItem('game001_history')) ||;
+    history.unshift(s);
+    if (history.length > 3) history.pop();
+    localStorage.setItem('game001_history', JSON.stringify(history));
+
+    let high = localStorage.getItem('game001_highscore') |
+
+| 0;
+    if (s > high) localStorage.setItem('game001_highscore', s);
+}
+
+// Input Control
+function handleInput(e) {
+    if (!gameRunning) return;
+    const clientX = e.type.includes('touch')? e.touches.clientX : e.clientX;
+    const mid = window.innerWidth / 2;
+    player.vx = clientX < mid? -7 : 7;
+}
+
+window.addEventListener('touchstart', handleInput, { passive: false });
+window.addEventListener('touchend', () => player.vx = 0);
+window.addEventListener('mousedown', handleInput);
+window.addEventListener('mouseup', () => player.vx = 0);
+window.addEventListener('resize', resizeCanvas);
+
+// Session & Start Logic
 document.getElementById('start-btn').addEventListener('click', () => {
     const name = document.getElementById('username').value;
     const pid = document.getElementById('poornataId').value;
 
-    // Strict validation based on corporate requirements
     if (nameRegex.test(name) && pidRegex.test(pid)) {
+        localStorage.setItem('game001_user', JSON.stringify({ name, pid }));
+        localStorage.setItem('game001_expiry', Date.now() + 7776000000); // 90 days
         document.getElementById('login-container').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
-        
-        // CRITICAL: Must resize and initialize before the loop starts
-        resizeCanvas(); 
-        initGame(); 
+        resizeCanvas();
+        initGame();
     } else {
-        const error = document.getElementById('error-msg');
-        error.innerText = "Please enter a valid Name (Letters) and ID (Numbers).";
-        error.classList.remove('hidden');
+        document.getElementById('error-msg').innerText = "Valid Name and ID required.";
+        document.getElementById('error-msg').classList.remove('hidden');
     }
 });
 
-window.addEventListener('touchstart', handleInput, { passive: false });
-window.addEventListener('touchend', stopMovement);
-window.addEventListener('mousedown', handleInput);
-window.addEventListener('mouseup', stopMovement);
+// Auto-Login Check
+window.onload = () => {
+    const expiry = localStorage.getItem('game001_expiry');
+    if (expiry && Date.now() < expiry) {
+        document.getElementById('login-container').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+        resizeCanvas();
+        initGame();
+    }
+};
