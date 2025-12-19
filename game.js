@@ -44,7 +44,40 @@ function handleInput(e) {
 function stopMovement() {
     player.vx = 0;
 }
+function updatePhysics() {
+    player.vy += GRAVITY;
+    player.y += player.vy;
+    player.x += player.vx;
 
+    // Screen Wrapping Logic
+    if (player.x + 50 < 0) player.x = LOGIC_WIDTH;
+    if (player.x > LOGIC_WIDTH) player.x = -50;
+
+    // One-Way Collision detection
+    if (player.vy > 0) {
+        platforms.forEach(p => {
+            if (
+                player.x < p.x + p.width &&
+                player.x + 50 > p.x &&
+                player.y + 50 > p.y &&
+                player.y + 50 < p.y + p.height + 15 // Tolerance slop
+            ) {
+                // Landing detected
+                player.y = p.y - 50; // Snap to top
+                player.vy = JUMP_STRENGTH;
+            }
+        });
+    }
+
+    // World Scroll Trigger
+    if (player.y < LOGIC_HEIGHT / 2) {
+        let scrollAmount = LOGIC_HEIGHT / 2 - player.y;
+        player.y = LOGIC_HEIGHT / 2;
+        score += Math.floor(scrollAmount);
+        
+        platforms.forEach(p => { p.y += scrollAmount; });
+    }
+}
 window.addEventListener('touchstart', handleInput, { passive: false });
 window.addEventListener('touchend', stopMovement);
 window.addEventListener('mousedown', handleInput);
