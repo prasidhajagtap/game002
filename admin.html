@@ -2,66 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jump Master - User Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Player Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .stats-box { background: #eee; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: left; }
+       .stats-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+       .stats-table td,.stats-table th { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+       .highscore-box { background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--action-orange); }
     </style>
 </head>
 <body>
     <div id="login-container">
-        <h2>User Dashboard</h2>
-        <div id="user-info"></div>
-        
-        <div class="stats-box">
-            <h3>All-Time High Score</h3>
-            <p id="high-score">0</p>
-        </div>
+        <div class="login-box">
+            <h2>Player Stats</h2>
+            <div class="highscore-box">
+                <strong>Personal Best:</strong> <span id="display-highscore">0</span> pts
+            </div>
+            
+            <table class="stats-table">
+                <thead><tr><th>Game</th><th>Score</th></tr></thead>
+                <tbody id="history-list"></tbody>
+            </table>
 
-        <div class="stats-box">
-            <h3>Last 3 Games</h3>
-            <ul id="history-list"></ul>
+            <button onclick="window.location.href='index.html'" style="margin-top:20px;">BACK TO GAME</button>
+            <p class="small-link"><a href="#" onclick="clearSession()">Log Out / Clear Data</a></p>
         </div>
-
-        <button onclick="window.location.href='index.html'">Back to Game</button>
-        <button onclick="logout()" style="background-color: #333;">Logout</button>
     </div>
 
     <script>
-        // Proposed Admin/Dashboard Logic
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('game001_history')) |
-
-|;
-    const highscore = localStorage.getItem('game001_highscore') |
+        window.onload = () => {
+            const high = localStorage.getItem('game001_highscore') |
 
 | 0;
-    const listElement = document.getElementById('history-list');
-    
-    document.getElementById('display-highscore').innerText = highscore;
+            const history = JSON.parse(localStorage.getItem('game001_history')) ||;
+            
+            document.getElementById('display-highscore').innerText = high;
+            const list = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                list.innerHTML = '<tr><td colspan="2">No games recorded.</td></tr>';
+            } else {
+                list.innerHTML = history.map((s, i) => `<tr><td>Game ${i+1}</td><td>${s}</td></tr>`).join('');
+            }
+        };
 
-    if (history.length === 0) {
-        listElement.innerHTML = '<tr><td colspan="2">No games played yet.</td></tr>';
-        return;
-    }
-
-    listElement.innerHTML = history.map((score, index) => `
-        <tr>
-            <td>Game ${index + 1}</td>
-            <td>${score} pts</td>
-        </tr>
-    `).join('');
-}
-
-function resetSession() {
-    if (confirm('Are you sure you want to log out and clear all data?')) {
-        localStorage.removeItem('game001_user');
-        localStorage.removeItem('game001_expiry');
-        // We preserve highscore and history but clear authentication
-        window.location.href = 'index.html';
-    }
-}
+        function clearSession() {
+            if(confirm("Clear all game data?")) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
     </script>
 </body>
 </html>
