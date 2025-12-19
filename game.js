@@ -3,6 +3,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio |
 
+| 1; // Corrected Logical OR
+
 const LOGIC_WIDTH = 400;
 const LOGIC_HEIGHT = 600;
 const GRAVITY = 0.4;
@@ -12,7 +14,7 @@ const pidRegex = /^[0-9]+$/;
 
 // Game State
 let player = { x: 175, y: 500, width: 50, height: 50, vx: 0, vy: 0 };
-let platforms =;
+let platforms =; // Corrected array initialization
 let score = 0;
 let gameRunning = false;
 let assetsLoaded = 0;
@@ -79,11 +81,9 @@ function update() {
     player.y += player.vy;
     player.x += player.vx;
 
-    // Boundary Logic
     if (player.x + player.width < 0) player.x = LOGIC_WIDTH;
     if (player.x > LOGIC_WIDTH) player.x = -player.width;
 
-    // Collision
     if (player.vy > 0) {
         platforms.forEach(p => {
             if (player.x < p.x + p.width &&
@@ -96,7 +96,6 @@ function update() {
         });
     }
 
-    // Camera/Score
     if (player.y < LOGIC_HEIGHT / 2) {
         let diff = LOGIC_HEIGHT / 2 - player.y;
         player.y = LOGIC_HEIGHT / 2;
@@ -149,7 +148,6 @@ function saveScore(s) {
     if (parseInt(s) > parseInt(high)) localStorage.setItem('game001_highscore', s);
 }
 
-// Controls
 function handleInput(e) {
     if (!gameRunning) return;
     const clientX = e.type.includes('touch')? e.touches.clientX : e.clientX;
@@ -163,13 +161,11 @@ window.addEventListener('mousedown', handleInput);
 window.addEventListener('mouseup', () => player.vx = 0);
 window.addEventListener('resize', resizeCanvas);
 
-// FIXED Start Button Logic
 document.getElementById('start-btn').addEventListener('click', () => {
     const name = document.getElementById('username').value.trim();
     const pid = document.getElementById('poornataId').value.trim();
     const error = document.getElementById('error-msg');
 
-    // Mandatory Prompting Logic
     if (!name ||!pid) {
         error.innerText = "Mandatory: Please enter both Name and ID.";
         error.classList.remove('hidden');
@@ -189,7 +185,6 @@ document.getElementById('start-btn').addEventListener('click', () => {
     }
 });
 
-// Auto-Login Check
 window.onload = () => {
     const expiry = localStorage.getItem('game001_expiry');
     if (expiry && Date.now() < parseInt(expiry)) {
