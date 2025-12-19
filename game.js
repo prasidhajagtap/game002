@@ -1,4 +1,4 @@
-// Configuration
+// Initialization
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dpr = window.devicePixelRatio |
@@ -12,25 +12,25 @@ const JUMP_STRENGTH = -12;
 const nameRegex = /^[A-Za-z\s]+$/;
 const pidRegex = /^[0-9]+$/;
 
-// State
+// Game State
 let player = { x: 175, y: 500, width: 50, height: 50, vx: 0, vy: 0 };
-let platforms =; // FIXED: Initialized as empty array
+let platforms =;
 let score = 0;
 let gameRunning = false;
-let assetsLoadedCount = 0;
+let assetsLoaded = 0;
 
-// Asset Loading
+// Image Handling
 const images = {};
-const assetSrcs = {
+const srcs = {
     hero: 'character.png',
     plat1: 'block-1.png',
     plat2: 'block-2.png'
 };
 
-Object.keys(assetSrcs).forEach(key => {
+Object.keys(srcs).forEach(key => {
     images[key] = new Image();
-    images[key].src = assetSrcs[key];
-    images[key].onload = () => { assetsLoadedCount++; };
+    images[key].src = srcs[key];
+    images[key].onload = () => { assetsLoaded++; };
 });
 
 function resizeCanvas() {
@@ -81,9 +81,11 @@ function update() {
     player.y += player.vy;
     player.x += player.vx;
 
+    // Boundary Logic
     if (player.x + player.width < 0) player.x = LOGIC_WIDTH;
     if (player.x > LOGIC_WIDTH) player.x = -player.width;
 
+    // Collision
     if (player.vy > 0) {
         platforms.forEach(p => {
             if (player.x < p.x + p.width &&
@@ -96,6 +98,7 @@ function update() {
         });
     }
 
+    // Camera/Score
     if (player.y < LOGIC_HEIGHT / 2) {
         let diff = LOGIC_HEIGHT / 2 - player.y;
         player.y = LOGIC_HEIGHT / 2;
@@ -137,7 +140,7 @@ function gameOver() {
 }
 
 function saveScore(s) {
-    let history = JSON.parse(localStorage.getItem('game001_history')) ||; // FIXED: Added fallback array
+    let history = JSON.parse(localStorage.getItem('game001_history')) ||;
     history.unshift(s);
     if (history.length > 3) history.pop();
     localStorage.setItem('game001_history', JSON.stringify(history));
@@ -162,22 +165,22 @@ window.addEventListener('mousedown', handleInput);
 window.addEventListener('mouseup', () => player.vx = 0);
 window.addEventListener('resize', resizeCanvas);
 
-// Login Logic
+// FIXED Start Button Logic
 document.getElementById('start-btn').addEventListener('click', () => {
     const name = document.getElementById('username').value.trim();
     const pid = document.getElementById('poornataId').value.trim();
     const error = document.getElementById('error-msg');
 
-    // Mandatory Prompting
+    // Mandatory Prompting Logic
     if (!name ||!pid) {
-        error.innerText = "Error: Name and Poornata ID are mandatory.";
+        error.innerText = "Mandatory: Please enter both Name and ID.";
         error.classList.remove('hidden');
         return;
     }
 
     if (nameRegex.test(name) && pidRegex.test(pid)) {
         localStorage.setItem('game001_user', JSON.stringify({ name, pid }));
-        localStorage.setItem('game001_expiry', Date.now() + 7776000000); // 90 days
+        localStorage.setItem('game001_expiry', Date.now() + 7776000000); 
         document.getElementById('login-container').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
         resizeCanvas();
@@ -188,6 +191,7 @@ document.getElementById('start-btn').addEventListener('click', () => {
     }
 });
 
+// Auto-Login Check
 window.onload = () => {
     const expiry = localStorage.getItem('game001_expiry');
     if (expiry && Date.now() < parseInt(expiry)) {
