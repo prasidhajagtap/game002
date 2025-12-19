@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Player Dashboard</title>
+    <title>Poornata Player Stats</title>
     <link rel="stylesheet" href="style.css">
     <style>
-       .stats-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-       .stats-table td,.stats-table th { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-       .highscore-box { background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--action-orange); }
+      .stats-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .stats-table td,.stats-table th { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+      .highscore-box { background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--action-orange); text-align: left; }
     </style>
 </head>
 <body>
     <div id="login-container">
         <div class="login-box">
-            <h2>Player Stats</h2>
+            <h2>Poornata Stats</h2>
             <div class="highscore-box">
-                <strong>Personal Best:</strong> <span id="display-highscore">0</span> pts
+                <strong>All-Time High:</strong> <span id="display-highscore">0</span> pts
             </div>
             
             <table class="stats-table">
@@ -25,7 +25,7 @@
             </table>
 
             <button onclick="window.location.href='index.html'" style="margin-top:20px;">BACK TO GAME</button>
-            <p class="small-link"><a href="#" onclick="clearSession()">Log Out / Clear Data</a></p>
+            <p class="small-link"><a href="#" onclick="clearSession()">Clear Local Data</a></p>
         </div>
     </div>
 
@@ -40,14 +40,14 @@
             const list = document.getElementById('history-list');
             
             if (history.length === 0) {
-                list.innerHTML = '<tr><td colspan="2">No games recorded.</td></tr>';
+                list.innerHTML = '<tr><td colspan="2">No games recorded yet.</td></tr>';
             } else {
-                list.innerHTML = history.map((s, i) => `<tr><td>Game ${i+1}</td><td>${s}</td></tr>`).join('');
+                list.innerHTML = history.map((s, i) => `<tr><td>Game ${i+1}</td><td>${s} pts</td></tr>`).join('');
             }
         };
 
         function clearSession() {
-            if(confirm("Clear all game data?")) {
+            if(confirm("This will clear your high score and game history. Proceed?")) {
                 localStorage.clear();
                 window.location.href = 'index.html';
             }
