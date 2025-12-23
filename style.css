@@ -5,6 +5,10 @@ canvas { display: block; position: absolute; top: 0; z-index: 1; }
 #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
+#gameCanvas {
+    transition: background-color 1.5s ease; /* Smooth theme transition */
+}
+.slow-mo-active { filter: saturate(1.5) contrast(1.2) hue-rotate(45deg); transition: filter 0.8s; }
 /* Unified Screen Box */
 .screen-box { 
     background: white; padding: 20px; border-radius: 20px; width: 88%; max-width: 340px; 
@@ -56,6 +60,11 @@ canvas { display: block; position: absolute; top: 0; z-index: 1; }
     position: fixed; bottom: 25px; left: 20px; 
     width: auto; pointer-events: auto; 
 }
+/* Themes for Progressive Content */
+.theme-lvl-5 { background-color: #e3f2fd !important; } /* Light Blue */
+.theme-lvl-10 { background-color: #fff3e0 !important; } /* Light Orange */
+.theme-lvl-15 { background-color: #f3e5f5 !important; } /* Lavender */
+.theme-lvl-20 { background-color: #212121 !important; } /* Dark Mode */
 
 /* Seamless Trivia Notification */
 .floating-trivia {
