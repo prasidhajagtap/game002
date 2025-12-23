@@ -3,48 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seamex Seamless Dash</title>
+    <title>Seamless Dash - Seamex</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <img id="player-img" src="character.png" alt="Player Character" style="display:none;">
-<div id="start-screen">
-    <div class="logo-container">
-        <div class="powered-by">Seamless Dash</div>
-        <img src="NEW Seamex logo.png" alt="Seamex" class="main-logo">
-    </div>
-    
-    <div class="high-score-box">
-        <h4>🏆 Top 3 High Scores</h4>
-        <ul id="high-score-list"><li>-</li><li>-</li><li>-</li></ul>
-    </div>
-
-    </div>
-    <div class="logo-container">
-    <div class="powered-by">Powered by</div>
-    <span class="logo-s">S</span><span class="logo-text">eamex</span>
-    <h1 class="game-title">Seamless Dash</h1>
-</div>
-
-<div id="level-container">
-    <div id="level-board">Level: <span id="level">1</span></div>
-</div>
-
-<div id="game-over-screen" class="hidden">
-    <h1>GAME OVER</h1>
-    <div id="share-card">
-        <p><span id="final-name">User</span> scored</p>
-        <h2 id="final-score">0</h2>
-        <p>Best: <span id="best-score">0</span></p>
-        <p class="challenge-msg">I challenge you to beat my score on the Poornata App!</p>
-    </div>
-    <button id="share-btn">SHARE CHALLENGE</button>
-    <button id="restart-btn">PLAY AGAIN</button>
-</div>
+    <img id="player-img" src="character.png" alt="Player" style="display:none;">
 
     <div id="ui-layer">
-        
+        <div id="main-branding" class="logo-container">
+            <div class="powered-by">Seamless Dash</div>
+            <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
+        </div>
+
         <div id="game-hud" class="hidden">
             <div class="hud-top">
                 <div id="score-board">Score: <span id="score">0</span></div>
@@ -53,58 +24,47 @@
             <div id="level-board">Level: <span id="level">1</span></div>
         </div>
 
-        <div id="pause-menu" class="hidden">
-            <h2>GAME PAUSED</h2>
-            <button id="resume-btn">RESUME</button>
-        </div>
-
         <div id="start-screen">
-            <div class="logo-container">
-                <span class="logo-s">S</span><span class="logo-text">eamex</span>
-                <div class="tagline">seamless experience always</div>
-            </div>
-            
             <div class="high-score-box">
                 <h4>🏆 Top 3 High Scores</h4>
-                <ul id="high-score-list">
-                    <li>-</li>
-                    <li>-</li>
-                    <li>-</li>
-                </ul>
+                <ul id="high-score-list"><li>-</li><li>-</li><li>-</li></ul>
             </div>
 
             <div class="login-form">
                 <div class="input-group">
                     <label>Employee Name</label>
-                    <input type="text" id="player-name" placeholder="Enter Name" autocomplete="off">
-                    <span class="error-msg" id="name-error">Letters only (No numbers/symbols)</span>
+                    <input type="text" id="player-name" placeholder="Letters only" autocomplete="off">
+                    <span class="error-msg" id="name-error">Use letters only</span>
                 </div>
-
                 <div class="input-group">
                     <label>Poornata ID</label>
-                    <input type="tel" id="player-id" placeholder="Enter ID" maxlength="10" autocomplete="off">
-                    <span class="error-msg" id="id-error">Numbers only (Must be entered)</span>
+                    <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10" autocomplete="off">
+                    <span class="error-msg" id="id-error">Enter numeric ID</span>
                 </div>
-
                 <button id="start-btn">START GAME</button>
             </div>
 
             <div class="instructions">
                 <h4>How to Play:</h4>
                 <ol>
-                    <li>Enter your Name & ID to begin.</li>
-                    <li><strong>Touch & Drag</strong> to move the character.</li>
-                    <li>Dodge the falling <strong>Red Balls</strong>.</li>
-                    <li>Survive to <strong>Level Up</strong> and learn Seamex trivia!</li>
+                    <li>Enter Name & Poornata ID.</li>
+                    <li>Drag the character to move.</li>
+                    <li>Avoid red obstacles.</li>
+                    <li>Complete levels for Seamex trivia!</li>
                 </ol>
             </div>
         </div>
 
+        <div id="pause-menu" class="hidden">
+            <h2>GAME PAUSED</h2>
+            <button id="resume-btn">RESUME</button>
+        </div>
+
         <div id="level-modal" class="hidden">
-            <h2>🎉 LEVEL UP! 🎉</h2>
+            <h2>🎉 LEVEL UP!</h2>
             <div class="trivia-box">
                 <h3>Did you know?</h3>
-                <p id="trivia-text">Trivia goes here...</p>
+                <p id="trivia-text">Trivia content loading...</p>
             </div>
             <button id="continue-btn">CONTINUE</button>
         </div>
@@ -112,24 +72,16 @@
         <div id="game-over-screen" class="hidden">
             <h1>GAME OVER</h1>
             <p>Well played, <span id="final-name">User</span>!</p>
-            
             <div class="final-stats">
-                <div class="stat-box">
-                    <span>Your Score</span>
-                    <span id="final-score" class="big-num">0</span>
-                </div>
-                <div class="stat-box">
-                    <span>Personal Best</span>
-                    <span id="best-score" class="big-num">0</span>
-                </div>
+                <div class="stat-box"><span>Score</span><span id="final-score" class="big-num">0</span></div>
+                <div class="stat-box"><span>Best</span><span id="best-score" class="big-num">0</span></div>
             </div>
-
+            <button id="share-btn" class="share-btn">CHALLENGE FRIENDS 🚀</button>
             <button id="restart-btn">PLAY AGAIN</button>
         </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
-
     <script src="script.js"></script>
 </body>
 </html>
