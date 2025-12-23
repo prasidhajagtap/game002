@@ -34,33 +34,36 @@ input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px;
 .overlay-modal { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; pointer-events: auto; z-index: 100; box-shadow: 0 0 100px rgba(0,0,0,0.5); }
 .score-card { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-weight: bold; }
 
-/* Unified Button Style */
-.main-btn, .share-btn, .secondary-btn, #change-user-link {
+/* Unified Button Styles */
+.main-btn, .share-btn, .secondary-btn {
     background: linear-gradient(135deg, var(--gold), var(--red));
     color: white;
     border: none;
     padding: 15px;
     border-radius: 30px;
-    font-weight: bold;
+    font-weight: 800;
     width: 100%;
     cursor: pointer;
     margin-top: 10px;
     font-size: 16px;
     pointer-events: auto;
-    display: block;
-    box-sizing: border-box;
-    text-decoration: none;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(160, 16, 24, 0.2);
-    transition: transform 0.1s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
 }
 
-.main-btn:active, .share-btn:active { transform: scale(0.98); }
-.main-btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-/* Flickering Shield Timer */
-.flicker { animation: flicker-red 0.5s infinite; }
-@keyframes flicker-red {
-    0%, 100% { opacity: 1; color: white; }
-    50% { opacity: 0.3; color: var(--red); }
+.secondary-btn {
+    filter: saturate(0.5) brightness(0.8);
+}
+
+.main-btn:active, .share-btn:active {
+    transform: scale(0.98);
+}
+/* Shield Flickering Effect */
+.flicker {
+    animation: flicker-ani 0.2s infinite;
+}
+@keyframes flicker-ani {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 #ui-footer { position: fixed; bottom: 20px; width: 100%; display: flex; justify-content: center; pointer-events: auto; }
