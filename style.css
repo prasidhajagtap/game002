@@ -1,238 +1,62 @@
-/* Core Reset */
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #fcfcfc;
-    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-    touch-action: none;
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background-color: #fcfcfc;
+    font-family: 'Segoe UI', sans-serif; touch-action: none;
 }
-/* Logo Styling */
-.main-logo {
-    width: 200px;
-    margin-bottom: 5px;
-}
-.powered-by {
-    font-size: 24px;
-    font-weight: bold;
-    color: #A01018;
-    text-transform: uppercase;
-}
-
-/* Level Board Centering Fix */
-#game-hud {
-    position: absolute; 
-    top: 15px; 
-    left: 0;
-    width: 100%; 
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    pointer-events: none;
-    z-index: 20;
-}
-.hud-top { 
-    display: flex; 
-    justify-content: space-between; 
-    width: 90%; 
-    align-items: center; 
-}
-#level-board {
-    font-size: 16px; 
-    font-weight: bold; 
-    color: #A01018;
-    background: rgba(255,255,255,0.95);
-    padding: 5px 20px; 
-    border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 5px;
-    width: auto; /* Prevents stretching */
-}
-
-canvas {
-    display: block;
-    position: absolute;
-    top: 0; left: 0;
-    z-index: 1;
-}
-
+canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 #ui-layer {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 10;
-    pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 10; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center;
 }
-
 .hidden { display: none !important; }
 
-/* Buttons & Inputs */
+/* Branding */
+#main-branding { margin-top: 40px; text-align: center; pointer-events: auto; z-index: 20; }
+.main-logo { width: 180px; height: auto; margin-top: 5px; }
+.powered-by { font-size: 20px; font-weight: 800; color: #A01018; letter-spacing: 1px; }
+
+/* HUD Control */
+#game-hud { width: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; }
+.hud-top { display: flex; justify-content: space-between; width: 90%; align-items: center; }
+#score-board, #level-board {
+    background: rgba(255,255,255,0.9); padding: 8px 15px;
+    border-radius: 20px; font-weight: bold; color: #A01018; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+#pause-btn { 
+    pointer-events: auto; width: 40px; height: 40px; border-radius: 50%;
+    background: #333; color: white; border: none; font-size: 16px; cursor: pointer;
+}
+
+/* Forms & Screens */
+#start-screen, #game-over-screen, #level-modal, #pause-menu {
+    background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px;
+    text-align: center; pointer-events: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    margin-top: 20px; border-top: 5px solid #A01018;
+}
+
+.game-active #main-branding, .game-active #start-screen { display: none !important; }
+
+.input-group { text-align: left; margin-bottom: 12px; }
+.input-group label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
+.input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+.error-msg { color: #D32F2F; font-size: 11px; display: none; }
+
 button {
-    background: linear-gradient(135deg, #FFC107, #D32F2F);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4);
-    pointer-events: auto;
-    transition: transform 0.1s;
-    text-transform: uppercase;
-}
-button:active { transform: scale(0.95); }
-
-/* Start Screen */
-#start-screen {
-    background: white;
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    pointer-events: auto;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    width: 90%;
-    max-width: 380px;
-    max-height: 90vh;
-    overflow-y: auto; /* Scroll if screen is small */
+    background: linear-gradient(135deg, #FFC107, #D32F2F); color: white;
+    border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold;
+    cursor: pointer; margin-top: 10px; width: 100%;
 }
 
-/* Logo Styling */
-.logo-container { margin-bottom: 20px; }
-.logo-s {
-    font-size: 48px;
-    font-weight: 800;
-    color: #D32F2F;
-}
-.logo-text {
-    font-size: 48px;
-    font-weight: 800;
-    color: #A01018;
-}
-.tagline {
-    color: #555;
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin-top: -5px;
-}
+.share-btn { background: #00C853; margin-bottom: 5px; }
 
-/* High Score Box */
-.high-score-box {
-    background: #FFF8E1;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #FFE082;
-}
-.high-score-box h4 { margin: 0 0 5px 0; color: #D32F2F; font-size: 14px; }
-#high-score-list {
-    list-style: none;
-    padding: 0; margin: 0;
-    font-size: 14px;
-    color: #333;
-    font-weight: bold;
-}
+.high-score-box { background: #FFF8E1; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+.high-score-box h4 { margin: 0 0 5px 0; font-size: 14px; color: #D32F2F; }
+#high-score-list { list-style: none; padding: 0; margin: 0; font-size: 14px; font-weight: bold; }
 
-/* Form Styling */
-.input-group { margin-bottom: 12px; text-align: left; }
-.input-group label {
-    display: block; font-size: 12px; color: #666; margin-bottom: 4px; font-weight: bold;
-}
-.input-group input {
-    width: 100%; padding: 10px;
-    border: 1px solid #ccc; border-radius: 8px;
-    font-size: 16px; outline: none;
-    box-sizing: border-box;
-}
-.input-group input:focus { border-color: #D32F2F; }
-.error-msg { color: #D32F2F; font-size: 11px; display: none; margin-top: 3px; font-weight: bold; }
+.instructions { margin-top: 15px; text-align: left; font-size: 12px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 8px; }
 
-/* Instructions */
-.instructions {
-    margin-top: 20px;
-    text-align: left;
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 4px solid #A01018;
-}
-.instructions h4 { margin: 0 0 8px 0; color: #333; font-size: 14px; }
-.instructions ol { margin: 0; padding-left: 20px; font-size: 12px; color: #555; line-height: 1.5; }
+.final-stats { display: flex; justify-content: space-around; margin: 15px 0; }
+.big-num { display: block; font-size: 24px; font-weight: 800; color: #D32F2F; }
 
-/* HUD */
-/* Update the HUD positioning and Level board */
-#game-hud {
-    position: absolute; 
-    top: 15px; 
-    left: 0;
-    width: 100%; /* Full width to allow centering */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers the Level Tab */
-    pointer-events: none;
-}
-
-.hud-top { 
-    display: flex; 
-    justify-content: space-between; 
-    width: 90%; /* Keeps score and pause button at edges */
-    align-items: center; 
-}
-
-#level-board {
-    font-size: 16px; 
-    font-weight: bold; 
-    color: #A01018;
-    background: rgba(255,255,255,0.95);
-    padding: 5px 20px; 
-    border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 5px;
-    width: fit-content; /* FIX: Prevents stretching */
-}
-
-/* Share Button Style */
-.share-btn {
-    background: #00C853; /* Green for success/share */
-    margin-top: 10px;
-}
-}
-#pause-btn {
-    pointer-events: auto;
-    width: 40px; height: 40px;
-    border-radius: 50%; padding: 0;
-    font-size: 16px; display: flex; align-items: center; justify-content: center;
-    background: #333; color: #fff;
-}
-
-/* Modals (Pause, Game Over, Level Up) */
-#pause-menu, #level-modal, #game-over-screen {
-    background: white; padding: 30px; border-radius: 15px;
-    text-align: center; pointer-events: auto;
-    box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-    width: 85%; max-width: 320px;
-    border-top: 5px solid #FFC107;
-}
-
-/* Trivia Styling */
-.trivia-box {
-    background: #FFF3E0; padding: 15px;
-    border-radius: 8px; margin: 15px 0;
-    border-left: 4px solid #FFC107;
-}
-.trivia-box h3 { margin: 0; color: #D32F2F; font-size: 12px; text-transform: uppercase; }
-.trivia-box p { margin: 5px 0 0 0; font-size: 14px; color: #333; }
-
-/* Final Stats */
-.final-stats {
-    display: flex; justify-content: space-around;
-    margin: 20px 0;
-}
-.stat-box { display: flex; flex-direction: column; }
-.stat-box span { font-size: 12px; color: #666; }
-.stat-box .big-num { font-size: 24px; font-weight: 800; color: #D32F2F; }
+.trivia-box { background: #FFF3E0; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left; border-left: 4px solid #FFC107; }
