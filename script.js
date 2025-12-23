@@ -24,16 +24,16 @@ const bestScoreEl = document.getElementById('best-score');
 const playerImg = document.getElementById('player-img');
 
 // --- Game State ---
-let gameState = 'START'; // START, PLAYING, PAUSED, LEVEL_UP, GAME_OVER
+let gameState = 'START';
 let score = 0;
 let level = 1;
 let frameCount = 0;
 let playerName = "";
 let speedMultiplier = 1;
-let nextLevelScore = 100; // Trigger next level when score hits this
+let nextLevelScore = 100;
 let animationId;
 
-// --- Trivia Data ---
+// --- Trivia Data (Source: Aditya Birla Group / Seamex) ---
 const triviaFacts = [
     "Seamex was established in 2017 to provide a seamless HR experience.",
     "Seamex is powered by 'Poornata', the Group's HRMS software.",
@@ -44,7 +44,7 @@ const triviaFacts = [
     "Seamex is located in Airoli, Navi Mumbai."
 ];
 
-// --- High Score System ---
+// --- High Score Logic ---
 function getHighScores() {
     const stored = localStorage.getItem('seamexScores');
     return stored ? JSON.parse(stored) : [];
@@ -53,8 +53,8 @@ function getHighScores() {
 function saveHighScore(newScore, name) {
     let scores = getHighScores();
     scores.push({ score: Math.floor(newScore), name: name });
-    scores.sort((a, b) => b.score - a.score); // Sort descending
-    scores = scores.slice(0, 3); // Keep top 3
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 3);
     localStorage.setItem('seamexScores', JSON.stringify(scores));
     updateHighScoreDisplay();
 }
@@ -66,108 +66,69 @@ function updateHighScoreDisplay() {
         : '<li>No scores yet</li>';
 }
 
-function getBestScore() {
-    const scores = getHighScores();
-    return scores.length > 0 ? scores[0].score : 0;
-}
-
-// Initialize Scores on Load
 updateHighScoreDisplay();
 
-// --- Resize Handling ---
+// --- RESIZE HANDLING (FIXED) ---
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    if (player) player.fixPosition(); // Ensure player stays on screen
+    // FIX: Only access player IF it has been initialized
+    if (typeof player !== 'undefined' && player !== null) {
+        player.fixPosition();
+    }
 }
 window.addEventListener('resize', resize);
 resize();
 
-// --- INPUT VALIDATION ---
+// --- VALIDATION ---
 nameInput.addEventListener('input', () => {
-    // Regex: Only letters and spaces allowed
-    const val = nameInput.value;
-    if (/[^a-zA-Z\s]/.test(val)) {
-        nameError.style.display = 'block';
-        // Remove invalid character immediately
-        nameInput.value = val.replace(/[^a-zA-Z\s]/g, '');
-    } else {
-        nameError.style.display = 'none';
-    }
+    nameInput.value = nameInput.value.replace(/[^a-zA-Z\s]/g, '');
 });
 
 idInput.addEventListener('input', () => {
-    // Regex: Only numbers allowed
-    const val = idInput.value;
-    if (/[^0-9]/.test(val)) {
-        idError.style.display = 'block';
-        idInput.value = val.replace(/[^0-9]/g, '');
-    } else {
-        idError.style.display = 'none';
-    }
+    idInput.value = idInput.value.replace(/[^0-9]/g, '');
 });
 
-// --- BUG FIX: ENSURE START ---
 document.getElementById('start-btn').addEventListener('click', () => {
     const nameVal = nameInput.value.trim();
     const idVal = idInput.value.trim();
-    let valid = true;
-
-    // Strict Name Validation: No numbers or symbols
-    if (nameVal.length < 2 || /[^a-zA-Z\s]/.test(nameVal)) {
+    
+    if (!nameVal || /[^a-zA-Z\s]/.test(nameVal)) {
         nameError.style.display = 'block';
-        valid = false;
-    }
-    // Strict ID Validation: Mandatory Numbers only
-    if (idVal.length === 0 || /[^0-9]/.test(idVal)) {
-        idError.style.display = 'block';
-        valid = false;
-    }
+        return;
+    } else { nameError.style.display = 'none'; }
 
-    if (valid) {
-        playerName = nameVal;
-        
-        // Fail-safe: Start game even if image loading hangs
-        if (playerImg.complete) {
-            startGame();
-        } else {
-            console.warn("Character image not loaded yet. Starting with placeholder...");
-            playerImg.onload = startGame; // Start when loaded
-            setTimeout(startGame, 1000); // Or start anyway after 1s
-        }
-    }
+    if (!idVal || !/^\d+$/.test(idVal)) {
+        idError.style.display = 'block';
+        return;
+    } else { idError.style.display = 'none'; }
+
+    playerName = nameVal;
+    startGame();
 });
 
 // --- CLASSES ---
-
 class Player {
     constructor() {
-        this.width = 60; // Adjusted for character aspect ratio
+        this.width = 60;
         this.height = 60;
         this.x = canvas.width / 2 - this.width / 2;
-        // Fix: Position near bottom (20px padding)
-        this.y = canvas.height - this.height - 20; 
+        this.y = canvas.height - this.height - 40;
     }
-
     fixPosition() {
-        // Called on resize to keep player visible
-        this.y = canvas.height - this.height - 20;
+        this.y = canvas.height - this.height - 40;
+        if (this.x > canvas.width - this.width) this.x = canvas.width - this.width;
     }
-
     draw() {
-        // Draw the uploaded character image
-        if (playerImg.complete) {
+        if (playerImg.complete && playerImg.naturalWidth !== 0) {
             ctx.drawImage(playerImg, this.x, this.y, this.width, this.height);
         } else {
-            // Fallback if image fails
-            ctx.fillStyle = '#FFC107';
+            ctx.fillStyle = '#FFC107'; // Seamex Amber
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     }
-
-    moveTo(x, y) {
+    moveTo(x) {
         this.x = x - this.width / 2;
-        // Restrict movement to screen bounds
         if (this.x < 0) this.x = 0;
         if (this.x > canvas.width - this.width) this.x = canvas.width - this.width;
     }
@@ -175,26 +136,16 @@ class Player {
 
 class Enemy {
     constructor() {
-        this.size = Math.random() * 30 + 30; 
+        this.size = Math.random() * 25 + 25;
         this.x = Math.random() * (canvas.width - this.size);
         this.y = -this.size;
-        this.speed = (Math.random() * 3 + 4) * speedMultiplier; 
-        this.color = '#D32F2F'; 
+        this.speed = (Math.random() * 2 + 3) * speedMultiplier;
     }
-
-    update() {
-        this.y += this.speed;
-    }
-
+    update() { this.y += this.speed; }
     draw() {
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = '#D32F2F'; // Seamex Red
         ctx.beginPath();
         ctx.arc(this.x + this.size/2, this.y + this.size/2, this.size/2, 0, Math.PI * 2);
-        ctx.fill();
-        // Add a shine
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.beginPath();
-        ctx.arc(this.x + this.size/2 - 5, this.y + this.size/2 - 5, this.size/4, 0, Math.PI * 2);
         ctx.fill();
     }
 }
@@ -202,62 +153,63 @@ class Enemy {
 class Confetti {
     constructor() {
         this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height - canvas.height; // Start above screen
+        this.y = Math.random() * -canvas.height;
         this.color = ['#FFC107', '#D32F2F', '#A01018', '#00C853'][Math.floor(Math.random() * 4)];
-        this.size = Math.random() * 8 + 4;
+        this.size = Math.random() * 7 + 4;
         this.speedY = Math.random() * 3 + 2;
         this.speedX = Math.random() * 2 - 1;
-        this.rotation = Math.random() * 360;
     }
     update() {
         this.y += this.speedY;
         this.x += this.speedX;
-        this.rotation += 5;
-        // Reset if it falls off screen
-        if(this.y > canvas.height) this.y = -10;
+        if (this.y > canvas.height) this.y = -20;
     }
     draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation * Math.PI / 180);
         ctx.fillStyle = this.color;
-        ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
-        ctx.restore();
+        ctx.fillRect(this.x, this.y, this.size, this.size);
     }
 }
 
-// --- GAME LOGIC ---
-
-let player;
+let player = null;
 let enemies = [];
 let confettis = [];
 
 function startGame() {
-    // Prevent double-starting if both timeout and onload trigger
-    if (gameState === 'PLAYING') return;
-
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
-    pauseMenu.classList.add('hidden');
     hud.classList.remove('hidden');
+    pauseMenu.classList.add('hidden');
     
     gameState = 'PLAYING';
     score = 0;
     level = 1;
-    frameCount = 0;
     speedMultiplier = 1;
     nextLevelScore = 100;
-    
-    player = new Player();
     enemies = [];
     confettis = [];
+    player = new Player();
     
     updateHUD();
-    cancelAnimationFrame(animationId); // Clear any existing loops
+    if (animationId) cancelAnimationFrame(animationId);
     animate();
 }
 
-// Pause Functionality
+function levelUp() {
+    gameState = 'LEVEL_UP';
+    level++;
+    nextLevelScore += 100;
+    speedMultiplier += 0.2;
+    triviaText.innerText = triviaFacts[(level - 2) % triviaFacts.length];
+    confettis = Array.from({ length: 100 }, () => new Confetti());
+    levelModal.classList.remove('hidden');
+}
+
+document.getElementById('continue-btn').addEventListener('click', () => {
+    levelModal.classList.add('hidden');
+    gameState = 'PLAYING';
+    confettis = [];
+});
+
 document.getElementById('pause-btn').addEventListener('click', () => {
     if (gameState === 'PLAYING') {
         gameState = 'PAUSED';
@@ -266,154 +218,59 @@ document.getElementById('pause-btn').addEventListener('click', () => {
 });
 
 document.getElementById('resume-btn').addEventListener('click', () => {
-    if (gameState === 'PAUSED') {
-        gameState = 'PLAYING';
-        pauseMenu.classList.add('hidden');
-        animate(); // Restart loop
-    }
-});
-
-function updateHUD() {
-    scoreEl.innerText = Math.floor(score);
-    levelEl.innerText = level;
-}
-
-function levelUp() {
-    gameState = 'LEVEL_UP';
-    level++;
-    nextLevelScore += 100; // Next level at +100 score
-    speedMultiplier += 0.2; 
-    
-    // Trivia
-    const fact = triviaFacts[(level - 2) % triviaFacts.length];
-    triviaText.innerText = fact;
-    
-    // Generate Confetti
-    confettis = [];
-    for(let i=0; i<80; i++) confettis.push(new Confetti());
-    
-    levelModal.classList.remove('hidden');
-    
-    // NOTE: animate() keeps running to draw confetti, 
-    // but game updates (movement) stop inside the loop logic.
-}
-
-document.getElementById('continue-btn').addEventListener('click', () => {
-    levelModal.classList.add('hidden');
     gameState = 'PLAYING';
-    confettis = []; 
+    pauseMenu.classList.add('hidden');
+    animate();
 });
 
 document.getElementById('restart-btn').addEventListener('click', startGame);
-
-function checkCollision(p, e) {
-    const distX = Math.abs((p.x + p.width/2) - (e.x + e.size/2));
-    const distY = Math.abs((p.y + p.height/2) - (e.y + e.size/2));
-
-    if (distX > (p.width/2 + e.size/2)) { return false; }
-    if (distY > (p.height/2 + e.size/2)) { return false; }
-
-    if (distX <= (p.width/2)) { return true; } 
-    if (distY <= (p.height/2)) { return true; }
-
-    const dx = distX - p.width/2;
-    const dy = distY - p.height/2;
-    return (dx*dx + dy*dy <= (e.size/2 * e.size/2));
-}
-
-function animate() {
-    // If paused, stop the loop entirely
-    if (gameState === 'PAUSED' || gameState === 'GAME_OVER') return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // --- LEVEL UP STATE (Confetti Only) ---
-    if (gameState === 'LEVEL_UP') {
-        // Draw static game objects in background
-        player.draw();
-        enemies.forEach(e => e.draw());
-        
-        // Update & Draw Confetti
-        confettis.forEach(c => {
-            c.update();
-            c.draw();
-        });
-        
-        requestAnimationFrame(animate);
-        return;
-    }
-
-    // --- PLAYING STATE ---
-    if (gameState === 'PLAYING') {
-        frameCount++;
-        score += 0.1; 
-        updateHUD();
-
-        // Level Up Check
-        if (score >= nextLevelScore) {
-             levelUp();
-             // Important: Call animate again immediately so the return inside levelUp logic catches the new state
-             requestAnimationFrame(animate);
-             return; 
-        }
-
-        // Player
-        player.draw();
-
-        // Enemies
-        if (frameCount % Math.max(20, 60 - level * 4) === 0) { 
-            enemies.push(new Enemy());
-        }
-
-        for (let i = 0; i < enemies.length; i++) {
-            let e = enemies[i];
-            e.update();
-            e.draw();
-
-            if (checkCollision(player, e)) {
-                endGame();
-                return; // Stop loop immediately
-            }
-
-            // Remove off-screen
-            if (e.y > canvas.height) {
-                enemies.splice(i, 1);
-                i--;
-            }
-        }
-        
-        requestAnimationFrame(animate);
-    }
-}
 
 function endGame() {
     gameState = 'GAME_OVER';
     hud.classList.add('hidden');
     gameOverScreen.classList.remove('hidden');
-    
     document.getElementById('final-name').innerText = playerName;
-    
-    const finalS = Math.floor(score);
-    finalScoreEl.innerText = finalS;
-    
-    saveHighScore(finalS, playerName);
-    bestScoreEl.innerText = getBestScore();
+    const fs = Math.floor(score);
+    finalScoreEl.innerText = fs;
+    saveHighScore(fs, playerName);
+    bestScoreEl.innerText = getHighScores()[0].score;
+}
+
+function animate() {
+    if (gameState === 'PAUSED' || gameState === 'GAME_OVER') return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (gameState === 'LEVEL_UP') {
+        player.draw();
+        enemies.forEach(e => e.draw());
+        confettis.forEach(c => { c.update(); c.draw(); });
+    } else {
+        score += 0.1;
+        updateHUD();
+        if (score >= nextLevelScore) { levelUp(); }
+
+        player.draw();
+        if (Math.random() < 0.03) enemies.push(new Enemy());
+
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            enemies[i].update();
+            enemies[i].draw();
+
+            // Collision
+            const e = enemies[i];
+            const p = player;
+            if (e.x < p.x + p.width && e.x + e.size > p.x && e.y < p.y + p.height && e.y + e.size > p.y) {
+                endGame();
+                return;
+            }
+            if (e.y > canvas.height) enemies.splice(i, 1);
+        }
+    }
+    animationId = requestAnimationFrame(animate);
 }
 
 // --- CONTROLS ---
-
-// Mouse
-window.addEventListener('mousemove', (e) => {
-    if ((gameState === 'PLAYING' || gameState === 'LEVEL_UP') && player) {
-        player.moveTo(e.clientX, e.clientY);
-    }
-});
-
-// Touch
-window.addEventListener('touchmove', (e) => {
-    if ((gameState === 'PLAYING' || gameState === 'LEVEL_UP') && player) {
-        e.preventDefault(); 
-        const touch = e.touches[0];
-        player.moveTo(touch.clientX, touch.clientY);
-    }
-}, { passive: false });
+const handleInput = (x) => { if (player && (gameState === 'PLAYING' || gameState === 'LEVEL_UP')) player.moveTo(x); };
+window.addEventListener('mousemove', (e) => handleInput(e.clientX));
+window.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e.touches[0].clientX); }, { passive: false });
