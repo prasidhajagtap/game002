@@ -1,72 +1,52 @@
 :root { --red: #A01018; --gold: #FFC107; }
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f0f2f5; font-family: sans-serif; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 canvas { display: block; position: absolute; top: 0; z-index: 1; }
 
 #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
-/* Fixed Branding Overlap */
+/* Unified Screen Box */
 .screen-box { 
     background: white; padding: 20px; border-radius: 20px; width: 88%; max-width: 340px; 
     text-align: center; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     border-top: 8px solid var(--red); z-index: 20;
 }
 .responsive-logo { width: 120px; height: auto; margin: 10px auto; display: block; }
-.game-title { color: var(--red); font-size: 24px; font-weight: 900; margin: 0; }
-
-/* Input Validation */
-.input-group { margin-bottom: 12px; text-align: left; }
-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-.val-err { color: var(--red); font-size: 11px; display: none; font-weight: bold; margin-top: 4px; }
-
-/* HUD Pinned to Top */
-#game-hud { position: absolute; top: 10px; width: 95%; display: flex; flex-direction: column; align-items: center; z-index: 30; }
-.hud-top { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-.stat-pill { background: white; padding: 6px 12px; border-radius: 15px; font-weight: bold; color: var(--red); box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 12px; }
-#pause-btn { background: var(--red); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; pointer-events: auto; cursor: pointer; }
-
-/* How To Table */
-.how-to-card { background: #fafafa; padding: 10px; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; text-align: left; }
-.how-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 12px; }
-.how-row span { margin-right: 8px; }
-
-/* Modals */
-.overlay-modal { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; pointer-events: auto; z-index: 100; box-shadow: 0 0 100px rgba(0,0,0,0.5); }
-.score-card { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-weight: bold; }
+.game-title { color: var(--red); font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+.powered-text { font-size: 10px; color: #888; font-weight: bold; margin: 5px 0; }
 
 /* Unified Button System */
-.main-btn, .share-btn, .secondary-btn, .footer-btn { 
+.main-btn, .secondary-btn, .footer-btn { 
     background: linear-gradient(135deg, var(--gold), var(--red)); 
-    color: white; 
-    border: none; 
-    padding: 16px; 
-    border-radius: 30px; 
-    font-weight: 900; 
-    width: 100%; 
-    cursor: pointer; 
-    margin-top: 10px; 
-    font-size: 16px; 
-    pointer-events: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(160, 16, 24, 0.2);
-    transition: transform 0.1s;
+    color: white; border: none; padding: 16px; border-radius: 30px; 
+    font-weight: 900; width: 100%; cursor: pointer; margin-top: 10px; 
+    font-size: 16px; pointer-events: auto; display: flex; 
+    justify-content: center; align-items: center; gap: 10px;
+    box-shadow: 0 4px 15px rgba(160, 16, 24, 0.2); transition: transform 0.1s;
 }
-
-.main-btn:active { transform: scale(0.98); }
+.main-btn:active { transform: scale(0.96); }
 .main-btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-
-/* Shield Flickering Effect */
-.flicker {
-    animation: flicker-ani 0.2s infinite;
-}
-@keyframes flicker-ani {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-#ui-footer { position: fixed; bottom: 20px; width: 100%; display: flex; justify-content: center; pointer-events: auto; }
-/* Specific small tweaks for footer/secondary */
+.secondary-btn { filter: hue-rotate(190deg); margin-bottom: 5px; }
 .footer-btn { width: auto; padding: 10px 20px; font-size: 13px; }
-.secondary-btn { filter: hue-rotate(180deg); } /* Slightly different hue for secondary but same style */
+
+/* HUD */
+#game-hud { position: absolute; top: 15px; width: 95%; display: flex; flex-direction: column; align-items: center; z-index: 30; }
+.hud-top { display: flex; width: 100%; justify-content: space-between; align-items: center; }
+.stat-pill { background: white; padding: 8px 14px; border-radius: 15px; font-weight: 800; color: var(--red); box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 12px; border: 1px solid #eee; }
+.pause-circle { background: var(--red); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; pointer-events: auto; cursor: pointer; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+#shield-indicator { background: #0984e3; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; margin-top: 10px; font-size: 12px; box-shadow: 0 4px 10px rgba(9, 132, 227, 0.4); }
+
+/* How To Table */
+.how-to-card { background: #fafafa; padding: 12px; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; text-align: left; }
+.how-to-header { font-size: 10px; font-weight: 900; color: #bbb; text-align: center; margin-bottom: 8px; }
+.how-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 12px; line-height: 1.2; }
+.how-row span { margin-right: 10px; font-size: 16px; }
+
+/* Modals */
+.overlay-modal { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; pointer-events: auto; z-index: 100; border-top: 8px solid var(--red); }
+.score-card { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 16px; }
+.score-card span:last-child { color: var(--red); font-size: 20px; }
+.trivia-box { background: #fff9e6; padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 14px; border-left: 4px solid var(--gold); text-align: left; }
+
+#ui-footer { position: fixed; bottom: 25px; width: 100%; display: flex; justify-content: center; pointer-events: auto; }
+.val-err { color: var(--red); font-size: 11px; display: none; font-weight: bold; margin-top: 4px; }
