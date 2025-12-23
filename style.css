@@ -1,48 +1,49 @@
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #eee; }
+:root { --seamex-red: #A01018; --seamex-gold: #FFC107; --bg-light: #f8f9fa; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; background: #ddd; }
 canvas { display: block; position: absolute; top: 0; z-index: 1; }
-#ui-layer { position: absolute; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+
+#ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
-/* Fixed Volume & Pause Button Positions */
-.audio-btn { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: white; border: 2px solid #ddd; pointer-events: auto; z-index: 100; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-#pause-btn { pointer-events: auto; width: 45px; height: 45px; border-radius: 50%; background: #2d3436; color: white; border: none; font-size: 16px; cursor: pointer; }
+/* Responsive Logo Fix */
+.branding-header { margin-bottom: 10px; }
+.responsive-logo { width: 100%; max-width: 180px; height: auto; display: block; margin: 0 auto; }
+.powered-text { font-size: 10px; color: #888; letter-spacing: 2px; margin-bottom: 2px; }
+.game-subtitle { font-weight: 900; color: var(--seamex-red); font-size: 22px; margin-top: -5px; }
 
-/* Start Screen Container */
-#start-screen { background: white; padding: 25px; border-radius: 25px; width: 85%; max-width: 320px; text-align: center; pointer-events: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-top: 8px solid #A01018; display: flex; flex-direction: column; gap: 15px; }
+/* Screen Containers */
+.screen-box, .overlay-modal { 
+    background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 340px; 
+    text-align: center; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+    border-top: 6px solid var(--seamex-red); max-height: 90vh; overflow-y: auto;
+}
 
-/* Score Table Alignment */
-.high-score-box { background: #fff9db; padding: 10px; border-radius: 12px; border: 1px solid #ffeaa7; }
-#score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-#score-table th { color: #A01018; border-bottom: 1px solid #ddd; padding: 5px; }
-#score-table td { padding: 5px; font-weight: bold; }
-
-/* Validation UI */
-#validation-hint { font-size: 11px; color: #D32F2F; margin-top: 5px; font-weight: bold; }
-button:disabled { background: #ccc !important; cursor: not-allowed; box-shadow: none !important; }
-
-/* HUD Fixes */
-#game-hud { position: absolute; top: 20px; width: 90%; display: flex; justify-content: space-between; align-items: flex-start; }
-.hud-left { display: flex; gap: 10px; }
-#score-board, #level-board { background: white; padding: 8px 12px; border-radius: 15px; font-weight: 800; color: #A01018; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 14px; }
-#shield-status { background: #0984e3; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; margin-top: 5px; font-size: 12px; }
-
-/* Centered Modals */
-.overlay-modal { background: white; padding: 25px; border-radius: 25px; width: 80%; max-width: 300px; text-align: center; pointer-events: auto; box-shadow: 0 15px 50px rgba(0,0,0,0.3); border-top: 8px solid #A01018; z-index: 50; }
-.game-active #start-screen { display: none; }
-.final-stats { display: flex; justify-content: space-around; margin: 15px 0; }
-.stat-box { display: flex; flex-direction: column; }
-.big-num { font-size: 24px; font-weight: 900; color: #A01018; }
-.secondary-btn { background: #636e72; margin-top: 10px; }
-
-/* Inputs */
-.input-group { text-align: left; }
-.input-group label { font-size: 11px; font-weight: bold; color: #555; }
-.input-group input { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
-
-/* How to card */
-.how-to-card { background: #f8f9fa; padding: 10px; border-radius: 12px; border: 1px solid #eee; }
-.how-to-grid { display: flex; justify-content: space-around; }
-.how-item p { font-size: 9px; margin: 0; font-weight: bold; color: #777; }
+/* Validation */
+.val-msg { color: var(--seamex-red); font-size: 10px; display: none; font-weight: bold; margin-bottom: 8px; text-align: left; padding-left: 5px; }
+input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; margin-top: 5px; font-size: 14px; }
+input:focus { border-color: var(--seamex-gold); outline: none; }
 
 /* Buttons */
-button { background: linear-gradient(135deg, #FFC107, #D32F2F); color: white; border: none; padding: 14px; border-radius: 25px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
+button { background: linear-gradient(135deg, var(--seamex-gold), var(--seamex-red)); color: white; border: none; padding: 14px; border-radius: 25px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+button:disabled { filter: grayscale(1); cursor: not-allowed; }
+#change-user-link { background: none; color: #777; font-size: 12px; text-decoration: underline; padding: 5px; }
+
+/* Scores Table */
+.high-score-box { background: #fffcf0; padding: 10px; border-radius: 12px; border: 1px solid #f0e6cc; margin-bottom: 15px; }
+#score-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+#score-table th { color: var(--seamex-red); border-bottom: 1px solid #eee; padding: 4px; }
+
+/* HUD */
+#game-hud { position: absolute; top: 10px; width: 95%; display: flex; flex-direction: column; align-items: center; }
+.hud-content { display: flex; width: 100%; justify-content: space-between; align-items: center; }
+.stat { background: white; padding: 8px 15px; border-radius: 20px; font-weight: 800; color: var(--seamex-red); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+#shield-bar { background: #0984e3; color: white; padding: 5px 15px; border-radius: 15px; font-size: 12px; margin-top: 8px; font-weight: bold; }
+
+/* Share Image Styling */
+#capture-area { background: var(--seamex-red); padding: 30px; border-radius: 15px; color: white; }
+.share-logo { width: 120px; filter: brightness(0) invert(1); margin-bottom: 10px; }
+.big-num { font-size: 36px; display: block; font-weight: 900; color: var(--seamex-gold); }
+
+/* Audio & Pause */
+.audio-btn { position: fixed; top: 15px; right: 15px; width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid #ddd; pointer-events: auto; z-index: 100; cursor: pointer; }
+#pause-btn { background: #222; width: 40px; height: 40px; border-radius: 50%; padding: 0; }
