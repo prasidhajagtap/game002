@@ -8,31 +8,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-
     <img id="player-img" src="character.png" alt="Player" style="display:none;">
     
     <div id="ui-layer">
         <button id="music-toggle" class="audio-btn">🔊</button>
 
-        <div id="main-branding">
-            <div class="powered-by">SEAMLESS DASH</div>
-            <div class="sub-text">POWERED BY</div>
-            <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
-        </div>
-
-        <div id="game-hud" class="hidden">
-            <div class="hud-top">
-                <div id="score-board">Score: <span id="score">0</span></div>
-                <button id="pause-btn">❚❚</button>
-            </div>
-            <div id="level-board">Level: <span id="level">1</span></div>
-            <div id="shield-status" class="hidden">🛡️ SHIELD: <span id="shield-timer">30</span>s</div>
-        </div>
-
         <div id="start-screen">
+            <div id="main-branding">
+                <div class="powered-by">SEAMLESS DASH</div>
+                <div class="sub-text">POWERED BY</div>
+                <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
+            </div>
+
             <div class="high-score-box">
-                <h4>🏆 Top 3 High Scores</h4>
-                <ul id="high-score-list"><li>-</li><li>-</li><li>-</li></ul>
+                <h4>🏆 TOP 3 SCORES</h4>
+                <table id="score-table">
+                    <thead><tr><th>Rank</th><th>Name</th><th>Score</th></tr></thead>
+                    <tbody id="score-body"></tbody>
+                </table>
             </div>
 
             <div class="login-form">
@@ -44,53 +37,49 @@
                     <label>Poornata ID</label>
                     <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10">
                 </div>
-                <button id="start-btn">START DASHING</button>
+                <button id="start-btn" disabled>START DASHING</button>
+                <p id="validation-hint">Please fill all fields correctly</p>
             </div>
 
             <div class="how-to-card">
-                <div class="how-to-header">
-                    <span class="icon">🎮</span> HOW TO PLAY
-                </div>
                 <div class="how-to-grid">
-                    <div class="how-item">
-                        <div class="how-icon">🚀</div>
-                        <div class="how-text">Dodge Obstacles</div>
-                    </div>
-                    <div class="how-item">
-                        <div class="how-icon">🛡️</div>
-                        <div class="how-text">Get Shield</div>
-                    </div>
-                    <div class="how-item">
-                        <div class="how-icon">💡</div>
-                        <div class="how-text">Learn Trivia</div>
-                    </div>
+                    <div class="how-item"><span>🚀</span><p>Dodge</p></div>
+                    <div class="how-item"><span>🛡️</span><p>Shield</p></div>
+                    <div class="how-item"><span>💡</span><p>Trivia</p></div>
                 </div>
             </div>
         </div>
 
-        <div id="pause-menu" class="hidden">
+        <div id="game-hud" class="hidden">
+            <div class="hud-left">
+                <div id="score-board">Score: <span id="score">0</span></div>
+                <div id="level-board">Lvl: <span id="level">1</span></div>
+            </div>
+            <button id="pause-btn">❚❚</button>
+            <div id="shield-status" class="hidden">🛡️ <span id="shield-timer">0</span>s</div>
+        </div>
+
+        <div id="pause-menu" class="hidden overlay-modal">
             <h2>PAUSED</h2>
             <button id="resume-btn">RESUME</button>
         </div>
 
-        <div id="level-modal" class="hidden">
+        <div id="level-modal" class="hidden overlay-modal">
             <h2>🎉 LEVEL UP!</h2>
-            <div class="trivia-box">
-                <p id="trivia-text">Loading...</p>
-            </div>
+            <div class="trivia-box"><p id="trivia-text"></p></div>
             <button id="continue-btn">CONTINUE</button>
         </div>
 
-        <div id="game-over-screen" class="hidden">
+        <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
-                <h1>GAME OVER</h1>
+                <h1 class="go-title">GAME OVER</h1>
                 <div class="final-stats">
-                    <div class="stat-box"><span>Score</span><span id="final-score" class="big-num">0</span></div>
-                    <div class="stat-box"><span>Best</span><span id="best-score" class="big-num">0</span></div>
+                    <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
+                    <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
                 </div>
             </div>
             <button id="share-btn" class="share-btn">CHALLENGE FRIENDS 🚀</button>
-            <button id="restart-btn">PLAY AGAIN</button>
+            <button id="restart-btn" class="secondary-btn">PLAY AGAIN</button>
         </div>
     </div>
 
