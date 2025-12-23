@@ -19,20 +19,16 @@
             </div>
 
             <div id="returning-user-section" class="hidden">
-                <p class="welcome-text">Welcome back, <span id="display-name">User</span>!</p>
+                <p class="welcome-text">Welcome back, <span id="display-name"></span>!</p>
+                <div class="high-score-box">
+                    <h4>🏆 YOUR TOP SCORES</h4>
+                    <ul id="user-top-scores"></ul>
+                </div>
                 <button id="quick-start-btn" class="main-btn">START DASHING</button>
-                <button id="change-user-link">Not you? Change User</button>
+                <button id="change-user-link">Change User</button>
             </div>
 
             <div id="login-section">
-                <div class="high-score-box">
-                    <h4>🏆 TOP 3 SCORES</h4>
-                    <table id="score-table">
-                        <thead><tr><th>Rank</th><th>Name</th><th>Score</th></tr></thead>
-                        <tbody id="score-body"></tbody>
-                    </table>
-                </div>
-
                 <div class="login-form">
                     <div class="input-group">
                         <input type="text" id="player-name" placeholder="Employee Name (Letters Only)" autocomplete="off">
@@ -42,7 +38,16 @@
                         <input type="tel" id="player-id" placeholder="Poornata ID (Numbers Only)" maxlength="10">
                         <span class="val-msg" id="id-val">Numbers only please</span>
                     </div>
-                    <button id="start-btn" class="main-btn" disabled>LOGIN & START</button>
+                    <button id="start-btn" class="main-btn" disabled>START DASHING</button>
+                </div>
+            </div>
+
+            <div class="how-to-card">
+                <div class="how-to-header">HOW TO PLAY</div>
+                <div class="how-to-grid">
+                    <div class="how-item"><span>🚀</span><p>Dodge Orbs</p></div>
+                    <div class="how-item"><span>🛡️</span><p>Get Shield</p></div>
+                    <div class="how-item"><span>📈</span><p>Lv +1 / 100pts</p></div>
                 </div>
             </div>
         </div>
