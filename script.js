@@ -6,15 +6,15 @@ const triviaList = [
     "Poornata is the core HRMS platform for the entire Aditya Birla Group.",
     "Seamex enables digital onboarding for a paperless experience.",
     "The Seamex platform integrates payroll and benefits administration.",
-    "The Seamex 'Helpdesk' uses AI to answer common HR queries."
+    "Poornata stores employee data securely with advanced encryption."
 ];
 
 let player, enemies = [], powerups = [], particles = [], gameState = 'START';
 let score = 0, level = 1, playerName = "", poornataId = "", bgOffset = 0;
 let shieldActive = false, shieldTime = 0, isPaused = false;
-let timeWarpActive = false, lastTime = 0; // For Delta-Time physics
+let timeWarpActive = false;
 
-// SOUNDS - Retro 8-Bit Styled
+// SOUNDS
 const sounds = {
     power: new Audio('https://assets.mixkit.co/active_storage/sfx/1103/1103-preview.mp3'),
     hit: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
@@ -22,14 +22,22 @@ const sounds = {
     over: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
     slow: new Audio('https://assets.mixkit.co/active_storage/sfx/614/614-preview.mp3')
 };
-// 8-Bit Retro Background Music
-const bgMusic = new Audio('https://www.soundjay.com/free-music/retro-game-heart-bit-01.mp3'); 
+// DIRECT 8-BIT MUSIC LINK
+const bgMusic = new Audio('https://ia800504.us.archive.org/33/items/26_20240320_202403/Retro%20Game.mp3'); 
 bgMusic.loop = true;
 let isMuted = false;
 
 function unlockAudio() {
-    if (!isMuted) bgMusic.play().catch(() => {});
+    bgMusic.currentTime = 0;
+    if (!isMuted) {
+        let playPromise = bgMusic.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => { console.log("User interaction required for audio"); });
+        }
+    }
+    // Pre-load SFX
     Object.values(sounds).forEach(s => {
+        s.muted = false;
         s.play().then(() => { s.pause(); s.currentTime = 0; }).catch(() => {});
     });
 }
@@ -38,7 +46,7 @@ class Player {
     constructor() { 
         this.w = 85; this.h = 85;
         this.x = canvas.width/2 - 42; 
-        this.y = canvas.height * 0.60; // Lifted character 40% from top (60% from bottom)
+        this.y = canvas.height * 0.60; // Lifted 40% from bottom
     }
     draw() {
         if(shieldActive) {
@@ -53,32 +61,35 @@ class Player {
     }
 }
 
-// 1. ENGINE (Delta Time for iOS/Android smoothness parity)
-function animate(timestamp) {
+function animate() {
     if(gameState !== 'PLAYING' || isPaused) return;
     
-    const dt = timestamp - lastTime;
-    lastTime = timestamp;
-    const fpsAdj = dt / 16.67; // Adjust speed based on 60fps baseline
+    // Draw Background
+    let gridColor = level >= 20 ? "#333" : "#e9ecef";
+    ctx.fillStyle = level >= 20 ? "#212121" : (level >= 10 ? "#fff3e0" : "#f8f9fa");
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    
+    ctx.strokeStyle = gridColor;
+    bgOffset = (bgOffset + (timeWarpActive ? 1 : 2) + level) % 40;
+    for(let x=0; x<canvas.width; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+    for(let y=bgOffset; y<canvas.height; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
 
-    drawBackground();
-    updateTheme(); // Progressive Content
-
+    // Particles
     particles.forEach((p, i) => {
-        p.x += p.vx * fpsAdj; p.y += p.vy * fpsAdj; p.alpha -= 0.02 * fpsAdj;
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
         ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
         ctx.fillRect(p.x, p.y, p.size, p.size); ctx.restore();
         if (p.alpha <= 0) particles.splice(i, 1);
     });
 
     const spdMult = timeWarpActive ? 0.4 : 1.0;
-    score += (0.15 * spdMult * fpsAdj); 
+    score += (0.15 * spdMult); 
     document.getElementById('score').innerText = Math.floor(score);
     
     if(Math.floor(score) >= level * 100) { levelUp(); }
 
     if(shieldActive) {
-        shieldTime -= (0.016 * fpsAdj); 
+        shieldTime -= 0.016; 
         document.getElementById('shield-timer').innerText = Math.ceil(shieldTime);
         if(shieldTime <= 0) { shieldActive=false; document.getElementById('shield-indicator').classList.add('hidden'); }
     }
@@ -87,7 +98,7 @@ function animate(timestamp) {
 
     // Spawning logic
     if(Math.random() < (0.03 + (level*0.005)) * spdMult) {
-        enemies.push({x:Math.random()*(canvas.width-30), y:-50, spd:(3+(level*0.5)) * spdMult});
+        enemies.push({x:Math.random()*(canvas.width-30), y:-50, spd:(4+(level*0.6)) * spdMult});
     }
     if(Math.random() < 0.004) {
         const type = (level >= 5 && Math.random() > 0.7) ? 'SLOW' : 'SHIELD';
@@ -95,11 +106,11 @@ function animate(timestamp) {
     }
 
     powerups.forEach((p,i) => {
-        p.y += (3 * spdMult * fpsAdj);
+        p.y += (4 * spdMult);
         ctx.font = "30px Arial";
         ctx.fillText(p.type === 'SLOW' ? "⏳" : "🛡️", p.x, p.y);
         
-        if(p.x < player.x+70 && p.x+30 > player.x && p.y < player.y+70 && p.y+30 > player.y) {
+        if(p.x < player.x+75 && p.x+30 > player.x+10 && p.y < player.y+75 && p.y+30 > player.y+10) {
             if(p.type === 'SLOW') {
                 timeWarpActive = true; canvas.classList.add('slow-mo-active');
                 if(!isMuted) sounds.slow.play();
@@ -108,15 +119,15 @@ function animate(timestamp) {
                 shieldActive=true; shieldTime=8; if(!isMuted) sounds.power.play();
                 document.getElementById('shield-indicator').classList.remove('hidden');
             }
-            if(navigator.vibrate) navigator.vibrate(50); // Haptic
+            if(navigator.vibrate) navigator.vibrate(50);
             powerups.splice(i,1);
         }
     });
 
     enemies.forEach((e,i) => {
-        e.y += e.spd * fpsAdj; 
+        e.y += e.spd; 
         ctx.fillStyle='#D32F2F'; ctx.beginPath(); ctx.arc(e.x+15,e.y+15,15,0,Math.PI*2); ctx.fill();
-        if(e.x < player.x+70 && e.x+30 > player.x+10 && e.y < player.y+70 && e.y+30 > player.y+10) {
+        if(e.x < player.x+75 && e.x+30 > player.x+10 && e.y < player.y+75 && e.y+30 > player.y+10) {
             if(shieldActive) {
                 if(!isMuted) sounds.hit.play();
                 if(navigator.vibrate) navigator.vibrate(30);
@@ -129,23 +140,6 @@ function animate(timestamp) {
     requestAnimationFrame(animate);
 }
 
-// 2. PROGRESSIVE CONTENT (Themes)
-function updateTheme() {
-    if (level >= 20) canvas.style.backgroundColor = "#212121";
-    else if (level >= 15) canvas.style.backgroundColor = "#f3e5f5";
-    else if (level >= 10) canvas.style.backgroundColor = "#fff3e0";
-    else if (level >= 5) canvas.style.backgroundColor = "#e3f2fd";
-}
-
-function drawBackground() {
-    let gridColor = level >= 20 ? "#333" : "#e9ecef";
-    ctx.strokeStyle = gridColor;
-    bgOffset = (bgOffset + (timeWarpActive ? 1 : 2) + level) % 40;
-    for(let x=0; x<canvas.width; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
-    for(let y=bgOffset; y<canvas.height; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
-}
-
-// 3. UI & RESET FIXES
 function levelUp() {
     level++;
     if(!isMuted) sounds.lvl.play();
@@ -155,25 +149,23 @@ function levelUp() {
     triviaBox.className = 'floating-trivia';
     triviaBox.innerText = "💡 LEVEL UP: " + triviaList[level % triviaList.length];
     document.getElementById('ui-layer').appendChild(triviaBox);
-    setTimeout(() => { if(triviaBox) triviaBox.remove(); }, 5000);
+    setTimeout(() => { if(triviaBox) { triviaBox.style.opacity = '0'; setTimeout(()=>triviaBox.remove(), 500); } }, 4500);
 }
 
 function start(n, id) {
     unlockAudio(); playerName=n; poornataId=id;
     localStorage.setItem('seamex_session', JSON.stringify({n, id, exp: Date.now()+7776000000}));
     
-    // Explicit reset of variables and HUD
     gameState='PLAYING'; isPaused=false; timeWarpActive=false;
     score=0; level=1; enemies=[]; powerups=[]; particles=[];
+    
     document.getElementById('level').innerText = "1";
     document.getElementById('score').innerText = "0";
-    
     document.querySelectorAll('.screen-box, .overlay-modal').forEach(e => e.classList.add('hidden'));
     document.getElementById('game-hud').classList.remove('hidden');
     document.getElementById('hud-name').innerText = n;
     
     player=new Player();
-    lastTime = performance.now();
     requestAnimationFrame(animate);
 }
 
@@ -189,14 +181,37 @@ function gameOver() {
     document.getElementById('best-score').innerText = s[0];
 }
 
-// Event Listeners (Change User, Validation, Movement remain same as previous version)
+// Logic for Validation and Controls
+const nameInp = document.getElementById('player-name');
+const idInp = document.getElementById('player-id');
+const startBtn = document.getElementById('start-btn');
+function validate() {
+    const isNameValid = /^[a-zA-Z\s]+$/.test(nameInp.value) && nameInp.value.length >= 3;
+    const isIdValid = /^\d+$/.test(idInp.value) && idInp.value.length >= 4;
+    document.getElementById('name-val').style.display = (nameInp.value && !isNameValid) ? 'block' : 'none';
+    document.getElementById('id-val').style.display = (idInp.value && !isIdValid) ? 'block' : 'none';
+    startBtn.disabled = !(isNameValid && isIdValid);
+}
+[nameInp, idInp].forEach(el => el.addEventListener('input', validate));
+
 document.getElementById('change-user-link').addEventListener('click', () => { localStorage.removeItem('seamex_session'); location.reload(); });
 document.getElementById('pause-btn').addEventListener('click', () => { isPaused = true; bgMusic.pause(); document.getElementById('pause-overlay').classList.remove('hidden'); });
-document.getElementById('resume-btn').addEventListener('click', () => { isPaused = false; if(!isMuted) bgMusic.play(); document.getElementById('pause-overlay').classList.add('hidden'); lastTime = performance.now(); requestAnimationFrame(animate); });
-document.getElementById('start-btn').addEventListener('click', () => start(document.getElementById('player-name').value, document.getElementById('player-id').value));
+document.getElementById('resume-btn').addEventListener('click', () => { isPaused = false; if(!isMuted) bgMusic.play(); document.getElementById('pause-overlay').classList.add('hidden'); requestAnimationFrame(animate); });
+document.getElementById('start-btn').addEventListener('click', () => start(nameInp.value, idInp.value));
 document.getElementById('quick-start-btn').addEventListener('click', () => start(playerName, poornataId));
 document.getElementById('restart-btn').addEventListener('click', () => start(playerName, poornataId));
 document.getElementById('menu-btn').addEventListener('click', () => location.reload());
+
+document.getElementById('share-btn').addEventListener('click', () => {
+    const msg = `🚀 I just dashed ${Math.floor(score)} points as ${playerName}! Can you beat me? \nDownload Seamex: https://seamex.app.link/download`;
+    if(navigator.share) navigator.share({ title: 'Dash Challenge', text: msg });
+    else { navigator.clipboard.writeText(msg); alert("Challenge copied!"); }
+});
+
+document.getElementById('music-toggle').addEventListener('click', function() {
+    isMuted = !isMuted; this.innerText = isMuted ? "🔇 Sound Off" : "🔊 Sound On";
+    isMuted ? bgMusic.pause() : (gameState==='PLAYING' && bgMusic.play());
+});
 
 window.addEventListener('touchmove', (e) => { 
     if(player && gameState==='PLAYING') player.x = Math.max(0, Math.min(canvas.width-85, e.touches[0].clientX-42)); 
