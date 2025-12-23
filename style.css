@@ -5,36 +5,22 @@ canvas { display: block; position: absolute; top: 0; z-index: 1; }
 #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
-/* Fixed Branding Hierarchy */
 .screen-box { 
-    background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; 
+    background: white; padding: 20px; border-radius: 20px; width: 85%; max-width: 350px; 
     text-align: center; pointer-events: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-    border-top: 8px solid var(--seamex-red); z-index: 20;
-}
-.game-title { color: var(--seamex-red); font-size: 28px; font-weight: 900; margin: 0; }
-.powered-text { font-size: 10px; color: #888; letter-spacing: 3px; margin: 5px 0; font-weight: bold; }
-.responsive-logo { width: 140px; height: auto; display: block; margin: 0 auto 15px; }
-
-/* Footer for Audio Control */
-#ui-footer { 
-    position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; pointer-events: auto; z-index: 30; 
-}
-.footer-audio-btn { 
-    background: rgba(255,255,255,0.9); border: 2px solid #ddd; padding: 10px 20px; border-radius: 30px; 
-    font-weight: bold; cursor: pointer; color: #333; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-top: 8px solid var(--seamex-red); margin-bottom: 80px; /* Space for footer */
 }
 
-/* HUD Fixes */
-#game-hud { position: absolute; top: 15px; width: 92%; display: flex; flex-direction: column; align-items: center; }
-.hud-top { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-.stat-pill { background: white; padding: 8px 15px; border-radius: 20px; font-weight: 800; color: var(--seamex-red); min-width: 80px; text-align: center; }
-#pause-btn { background: var(--seamex-red); color: white; width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; pointer-events: auto; font-size: 18px; }
+/* Footer fix */
+#ui-footer { position: fixed; bottom: 15px; width: 100%; display: flex; justify-content: center; pointer-events: auto; z-index: 100; }
+.footer-audio-btn { background: #fff; border: 2px solid #ddd; padding: 8px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
 
-/* Input & Buttons */
-.input-group { margin-bottom: 12px; text-align: left; }
-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; }
+.game-title { color: var(--seamex-red); font-size: 24px; font-weight: 900; margin: 0; }
+.responsive-logo { width: 120px; height: auto; margin: 5px auto 10px; display: block; }
+.how-to-card { background: #f9f9f9; padding: 10px; border-radius: 12px; margin-top: 15px; border: 1px solid #eee; }
+.how-to-grid { display: flex; justify-content: space-around; font-size: 10px; font-weight: bold; color: #555; }
+.val-msg { color: var(--seamex-red); font-size: 10px; display: none; text-align: left; padding: 2px 5px; }
+
 .main-btn { background: linear-gradient(135deg, var(--seamex-gold), var(--seamex-red)); color: white; border: none; padding: 14px; border-radius: 25px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
 .main-btn:disabled { filter: grayscale(1); opacity: 0.6; }
-
-/* Modals */
-.overlay-modal { background: white; padding: 25px; border-radius: 20px; width: 80%; max-width: 300px; text-align: center; pointer-events: auto; border-top: 8px solid var(--seamex-red); }
+#change-user-link { background: none; border: none; color: #777; text-decoration: underline; font-size: 12px; cursor: pointer; margin-top: 10px; }
