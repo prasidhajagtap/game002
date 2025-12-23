@@ -1,60 +1,48 @@
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #f4f7f9; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #eee; }
 canvas { display: block; position: absolute; top: 0; z-index: 1; }
-#ui-layer { position: absolute; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+#ui-layer { position: absolute; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
-/* FIXED: Audio Button - Circular & No Stretching */
-.audio-btn { 
-    position: absolute; top: 20px; right: 20px; 
-    width: 44px; height: 44px; min-width: 44px;
-    border-radius: 50%; background: white; border: 2px solid #ddd;
-    pointer-events: auto; font-size: 20px; cursor: pointer; z-index: 100;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+/* Fixed Volume & Pause Button Positions */
+.audio-btn { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: white; border: 2px solid #ddd; pointer-events: auto; z-index: 100; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#pause-btn { pointer-events: auto; width: 45px; height: 45px; border-radius: 50%; background: #2d3436; color: white; border: none; font-size: 16px; cursor: pointer; }
 
-/* Branding */
-#main-branding { margin-top: 50px; text-align: center; pointer-events: auto; }
-.powered-by { font-size: 38px; font-weight: 900; color: #A01018; letter-spacing: 1px; }
-.sub-text { font-size: 10px; font-weight: bold; color: #888; letter-spacing: 4px; margin: 5px 0; }
-.main-logo { width: 120px; margin: 0 auto; display: block; }
+/* Start Screen Container */
+#start-screen { background: white; padding: 25px; border-radius: 25px; width: 85%; max-width: 320px; text-align: center; pointer-events: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-top: 8px solid #A01018; display: flex; flex-direction: column; gap: 15px; }
 
-/* REDESIGNED: How to Play Card */
-.how-to-card {
-    margin-top: 20px; width: 100%; background: #ffffff;
-    border-radius: 15px; padding: 15px; box-sizing: border-box;
-    border: 1px solid #e0e6ed; box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
-}
-.how-to-header { font-size: 13px; font-weight: 800; color: #A01018; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-.how-to-grid { display: flex; justify-content: space-between; align-items: flex-start; }
-.how-item { flex: 1; display: flex; flex-direction: column; align-items: center; }
-.how-icon { font-size: 24px; margin-bottom: 5px; }
-.how-text { font-size: 10px; font-weight: 700; color: #444; line-height: 1.2; text-align: center; }
+/* Score Table Alignment */
+.high-score-box { background: #fff9db; padding: 10px; border-radius: 12px; border: 1px solid #ffeaa7; }
+#score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#score-table th { color: #A01018; border-bottom: 1px solid #ddd; padding: 5px; }
+#score-table td { padding: 5px; font-weight: bold; }
 
-/* Form & Layouts */
-#start-screen, #game-over-screen, #level-modal, #pause-menu { 
-    background: white; padding: 25px; border-radius: 30px; width: 85%; max-width: 320px; 
-    text-align: center; pointer-events: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
-    margin-top: 20px; border-top: 8px solid #A01018; 
-}
-.game-active #main-branding, .game-active #start-screen { display: none !important; }
+/* Validation UI */
+#validation-hint { font-size: 11px; color: #D32F2F; margin-top: 5px; font-weight: bold; }
+button:disabled { background: #ccc !important; cursor: not-allowed; box-shadow: none !important; }
 
-.input-group { text-align: left; margin-bottom: 15px; }
-.input-group label { font-size: 12px; font-weight: 700; color: #666; margin-left: 5px; }
-.input-group input { 
-    width: 100%; padding: 12px; border: 2px solid #f1f3f5; border-radius: 12px; 
-    box-sizing: border-box; margin-top: 5px; font-size: 16px; transition: 0.3s;
-}
-.input-group input:focus { border-color: #FFC107; background: #fffdf5; outline: none; }
+/* HUD Fixes */
+#game-hud { position: absolute; top: 20px; width: 90%; display: flex; justify-content: space-between; align-items: flex-start; }
+.hud-left { display: flex; gap: 10px; }
+#score-board, #level-board { background: white; padding: 8px 12px; border-radius: 15px; font-weight: 800; color: #A01018; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-size: 14px; }
+#shield-status { background: #0984e3; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; margin-top: 5px; font-size: 12px; }
 
-button { 
-    background: linear-gradient(135deg, #FFC107, #D32F2F); color: white; 
-    border: none; padding: 16px; border-radius: 30px; font-weight: 800; 
-    width: 100%; cursor: pointer; font-size: 16px; margin-top: 10px;
-    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
-}
+/* Centered Modals */
+.overlay-modal { background: white; padding: 25px; border-radius: 25px; width: 80%; max-width: 300px; text-align: center; pointer-events: auto; box-shadow: 0 15px 50px rgba(0,0,0,0.3); border-top: 8px solid #A01018; z-index: 50; }
+.game-active #start-screen { display: none; }
+.final-stats { display: flex; justify-content: space-around; margin: 15px 0; }
+.stat-box { display: flex; flex-direction: column; }
+.big-num { font-size: 24px; font-weight: 900; color: #A01018; }
+.secondary-btn { background: #636e72; margin-top: 10px; }
 
-#game-hud { width: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 20px; }
-.hud-top { display: flex; justify-content: space-between; width: 90%; align-items: center; }
-#score-board, #level-board { background: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; color: #A01018; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-#shield-status { background: #0984e3; color: white; padding: 6px 15px; border-radius: 20px; margin-top: 10px; font-size: 13px; font-weight: bold; }
+/* Inputs */
+.input-group { text-align: left; }
+.input-group label { font-size: 11px; font-weight: bold; color: #555; }
+.input-group input { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+
+/* How to card */
+.how-to-card { background: #f8f9fa; padding: 10px; border-radius: 12px; border: 1px solid #eee; }
+.how-to-grid { display: flex; justify-content: space-around; }
+.how-item p { font-size: 9px; margin: 0; font-weight: bold; color: #777; }
+
+/* Buttons */
+button { background: linear-gradient(135deg, #FFC107, #D32F2F); color: white; border: none; padding: 14px; border-radius: 25px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
