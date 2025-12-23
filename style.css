@@ -9,6 +9,47 @@ body, html {
     font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
     touch-action: none;
 }
+/* Logo Styling */
+.main-logo {
+    width: 200px;
+    margin-bottom: 5px;
+}
+.powered-by {
+    font-size: 24px;
+    font-weight: bold;
+    color: #A01018;
+    text-transform: uppercase;
+}
+
+/* Level Board Centering Fix */
+#game-hud {
+    position: absolute; 
+    top: 15px; 
+    left: 0;
+    width: 100%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    pointer-events: none;
+    z-index: 20;
+}
+.hud-top { 
+    display: flex; 
+    justify-content: space-between; 
+    width: 90%; 
+    align-items: center; 
+}
+#level-board {
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #A01018;
+    background: rgba(255,255,255,0.95);
+    padding: 5px 20px; 
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 5px;
+    width: auto; /* Prevents stretching */
+}
 
 canvas {
     display: block;
