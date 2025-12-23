@@ -19,13 +19,9 @@
             </div>
 
             <div id="returning-user-section" class="hidden">
-                <p class="welcome-text">Welcome back, <strong id="display-name"></strong>!</p>
-                <div class="user-stats">
-                    <p>Your Best Scores:</p>
-                    <ul id="user-top-scores"></ul>
-                </div>
+                <p class="welcome-text">Ready to Dash, <br><strong id="display-name"></strong>?</p>
                 <button id="quick-start-btn" class="main-btn">START DASHING</button>
-                <button id="change-user-link">Change User</button>
+                <button id="change-user-link">Not you? Change User</button>
             </div>
 
             <div id="login-section">
@@ -41,24 +37,20 @@
                     <button id="start-btn" class="main-btn" disabled>START DASHING</button>
                 </div>
             </div>
-
-            <div class="how-to-card">
-                <div class="how-to-header">GUIDE</div>
-                <div class="how-to-content">
-                    <div class="how-row"><span>🔴</span><p><strong>Dodge Orbs:</strong> Avoid red spheres to stay in the dash.</p></div>
-                    <div class="how-row"><span>🛡️</span><p><strong>Shield:</strong> Collect Gold Shields for 8s of invincibility.</p></div>
-                    <div class="how-row"><span>📈</span><p><strong>Level Up:</strong> Reach every 100 points for Seamex trivia.</p></div>
-                </div>
-            </div>
         </div>
 
         <div id="game-hud" class="hidden">
-            <div class="hud-top">
-                <div class="stat-pill">SCORE: <span id="score">0</span></div>
+            <div class="hud-top-bar">
+                <div class="hud-left">
+                    <div class="stat-pill">👤 <span id="hud-player-name">User</span></div>
+                    <div class="stat-pill">⭐ <span id="score">0</span></div>
+                </div>
                 <button id="pause-btn">❚❚</button>
-                <div class="stat-pill">LVL: <span id="level">1</span></div>
+                <div class="hud-right">
+                    <div class="stat-pill">LVL: <span id="level">1</span></div>
+                </div>
             </div>
-            <div id="shield-indicator" class="hidden">🛡️ SHIELD ACTIVE: <span id="shield-timer">0</span>s</div>
+            <div id="shield-indicator" class="hidden">🛡️ SHIELD: <span id="shield-timer">8</span>s</div>
         </div>
 
         <div id="ui-footer">
@@ -78,12 +70,13 @@
             <div id="capture-area">
                 <h1 class="go-title">DASH OVER</h1>
                 <div class="final-stats">
-                    <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
-                    <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
+                    <div class="score-card"><span>YOUR SCORE</span><span id="final-score">0</span></div>
+                    <div class="score-card"><span>PERSONAL BEST</span><span id="best-score">0</span></div>
                 </div>
             </div>
             <button id="share-btn" class="share-btn">CHALLENGE FRIENDS 🚀</button>
             <button id="restart-btn" class="main-btn">PLAY AGAIN</button>
+            <button id="back-to-menu-btn" class="secondary-btn">MAIN MENU</button>
         </div>
     </div>
 
