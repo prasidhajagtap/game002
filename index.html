@@ -3,84 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seamless Dash - Seamex</title>
+    <title>Seamless Dash</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <img id="player-img" src="character.png" alt="Player" style="display:none;">
+    <canvas id="gameCanvas"></canvas>
     
     <div id="ui-layer">
         <div id="start-screen" class="screen-box">
-            <div class="branding-header">
+            <div class="branding">
                 <h1 class="game-title">SEAMLESS DASH</h1>
                 <p class="powered-text">POWERED BY</p>
                 <img src="NEW Seamex logo.png" alt="Seamex" class="responsive-logo">
             </div>
 
             <div id="returning-user-section" class="hidden">
-                <p class="welcome-text">Ready to Dash, <br><strong id="display-name"></strong>?</p>
+                <p class="welcome-text">Ready, <strong id="display-name"></strong>?</p>
                 <button id="quick-start-btn" class="main-btn">START DASHING</button>
-                <button id="change-user-link">Not you? Change User</button>
+                <button id="change-user-link" class="link-btn">Change User</button>
             </div>
 
             <div id="login-section">
-                <div class="login-form">
-                    <div class="input-group">
-                        <input type="text" id="player-name" placeholder="Employee Name" autocomplete="off">
-                        <span class="val-msg" id="name-val">Letters only please</span>
-                    </div>
-                    <div class="input-group">
-                        <input type="tel" id="player-id" placeholder="Poornata ID" maxlength="10">
-                        <span class="val-msg" id="id-val">Numbers only please</span>
-                    </div>
-                    <button id="start-btn" class="main-btn" disabled>START DASHING</button>
+                <div class="input-group">
+                    <input type="text" id="player-name" placeholder="Employee Name">
+                    <input type="tel" id="player-id" placeholder="Poornata ID" maxlength="10">
                 </div>
+                <button id="start-btn" class="main-btn" disabled>START DASHING</button>
             </div>
         </div>
 
         <div id="game-hud" class="hidden">
-            <div class="hud-top-bar">
-                <div class="hud-left">
-                    <div class="stat-pill">👤 <span id="hud-player-name">User</span></div>
-                    <div class="stat-pill">⭐ <span id="score">0</span></div>
-                </div>
+            <div class="hud-bar">
+                <div class="hud-pill">👤 <span id="hud-name"></span></div>
+                <div class="hud-pill">⭐ <span id="score">0</span></div>
                 <button id="pause-btn">❚❚</button>
-                <div class="hud-right">
-                    <div class="stat-pill">LVL: <span id="level">1</span></div>
-                </div>
+                <div class="hud-pill">LVL: <span id="level">1</span></div>
             </div>
-            <div id="shield-indicator" class="hidden">🛡️ SHIELD: <span id="shield-timer">8</span>s</div>
         </div>
 
         <div id="ui-footer">
-            <button id="music-toggle" class="footer-audio-btn">🔊 Sound On</button>
+            <button id="music-toggle" class="footer-btn">🔊 Sound On</button>
         </div>
 
         <div id="level-modal" class="hidden overlay-modal">
             <h2>🎉 LEVEL UP!</h2>
-            <div class="trivia-box">
-                <p class="trivia-label">SEAMEX TRIVIA</p>
-                <p id="trivia-text"></p>
-            </div>
+            <div class="trivia-box"><p id="trivia-text"></p></div>
             <button id="continue-btn" class="main-btn">KEEP DASHING</button>
         </div>
 
         <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
-                <h1 class="go-title">DASH OVER</h1>
-                <div class="final-stats">
-                    <div class="score-card"><span>YOUR SCORE</span><span id="final-score">0</span></div>
-                    <div class="score-card"><span>PERSONAL BEST</span><span id="best-score">0</span></div>
-                </div>
+                <h2 class="go-title">DASH OVER</h2>
+                <div class="score-row"><span>SCORE</span><span id="final-score">0</span></div>
+                <div class="score-row"><span>BEST</span><span id="best-score">0</span></div>
             </div>
             <button id="share-btn" class="share-btn">CHALLENGE FRIENDS 🚀</button>
             <button id="restart-btn" class="main-btn">PLAY AGAIN</button>
-            <button id="back-to-menu-btn" class="secondary-btn">MAIN MENU</button>
+            <button id="menu-btn" class="secondary-btn">MAIN MENU</button>
         </div>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
     <script src="script.js"></script>
 </body>
 </html>
