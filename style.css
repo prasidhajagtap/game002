@@ -50,3 +50,26 @@ canvas { display: block; position: absolute; top: 0; z-index: 1; }
 
 #ui-footer { position: fixed; bottom: 25px; width: 100%; display: flex; justify-content: center; pointer-events: auto; }
 .val-err { color: var(--red); font-size: 11px; display: none; font-weight: bold; margin-top: 4px; }
+
+/* Ergonomics: Sound button to the left */
+#ui-footer { 
+    position: fixed; bottom: 25px; left: 20px; 
+    width: auto; pointer-events: auto; 
+}
+
+/* Seamless Trivia Notification */
+.floating-trivia {
+    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95); padding: 12px 18px; border-radius: 12px;
+    border-left: 6px solid var(--gold); font-size: 13px; width: 85%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15); animation: slideDownFade 0.5s ease-out;
+    z-index: 100; color: #333; font-weight: 600; pointer-events: none;
+}
+
+/* Time Warp Screen Effect */
+.slow-mo-active { filter: sepia(0.5) hue-rotate(180deg) brightness(1.1); transition: filter 0.5s; }
+
+@keyframes slideDownFade { 
+    from { opacity: 0; transform: translate(-50%, -20px); } 
+    to { opacity: 1; transform: translate(-50%, 0); } 
+}
