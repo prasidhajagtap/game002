@@ -11,7 +11,7 @@ const triviaList = [
     "Seamex aims for a 'Seamless Experience Always' in HR service delivery."
 ];
 // Add to your variable declarations at the top
-let particles = []; 
+
 const bgMusic = new Audio('https://assets.mixkit.co/active_storage/sfx/123/123-preview.mp3'); // Simple rhythmic loop
 bgMusic.loop = true;
 let player, enemies = [], powerups = [], particles = [], gameState = 'START';
