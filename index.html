@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seamless Dash - Seamex</title>
+    <title>Seamless Dash - Powered by Seamex</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
     <img id="player-img" src="character.png" alt="Player" style="display:none;">
-
+    
     <div id="ui-layer">
         <div id="main-branding">
             <div class="powered-by">SEAMLESS DASH</div>
+            <div class="sub-text">POWERED BY</div>
             <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
         </div>
 
@@ -23,6 +24,7 @@
                 <button id="pause-btn">❚❚</button>
             </div>
             <div id="level-board">Level: <span id="level">1</span></div>
+            <div id="shield-status" class="hidden">🛡️ SHIELD ACTIVE: <span id="shield-timer">30</span>s</div>
         </div>
 
         <div id="start-screen">
@@ -42,12 +44,21 @@
                     <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10">
                     <span class="error-msg" id="id-error">Invalid ID</span>
                 </div>
-                <button id="start-btn">START GAME</button>
+                <button id="start-btn">START DASHING</button>
+            </div>
+
+            <div class="instructions-box">
+                <h4>How to Play:</h4>
+                <ul>
+                    <li>Avoid red obstacles. Collect 🛡️ for 30s invincibility.</li>
+                    <li>Drag or touch to move your character.</li>
+                    <li>Unlock Seamex trivia every level up!</li>
+                </ul>
             </div>
         </div>
 
         <div id="pause-menu" class="hidden">
-            <h2>GAME PAUSED</h2>
+            <h2>PAUSED</h2>
             <button id="resume-btn">RESUME</button>
         </div>
 
@@ -55,7 +66,7 @@
             <h2>🎉 LEVEL UP!</h2>
             <div class="trivia-box">
                 <h3>Did you know?</h3>
-                <p id="trivia-text">Loading trivia...</p>
+                <p id="trivia-text">Loading...</p>
             </div>
             <button id="continue-btn">CONTINUE</button>
         </div>
@@ -63,7 +74,7 @@
         <div id="game-over-screen" class="hidden">
             <div id="capture-area">
                 <h1>GAME OVER</h1>
-                <p>Great job, <span id="final-name">User</span>!</p>
+                <p>Great run, <span id="final-name">User</span>!</p>
                 <div class="final-stats">
                     <div class="stat-box"><span>Score</span><span id="final-score" class="big-num">0</span></div>
                     <div class="stat-box"><span>Best</span><span id="best-score" class="big-num">0</span></div>
