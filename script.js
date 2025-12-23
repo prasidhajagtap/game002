@@ -17,6 +17,7 @@ const triviaText = document.getElementById('trivia-text');
 const finalScoreEl = document.getElementById('final-score');
 const bestScoreEl = document.getElementById('best-score');
 const playerImg = document.getElementById('player-img');
+const pauseBtn = document.getElementById('pause-btn');
 
 // 2. GLOBAL GAME STATE
 let player = null;
@@ -161,16 +162,16 @@ function animate() {
 
             const e = enemies[i];
             const p = player;
-            // Collision
-            if (e.x < p.x + p.width && e.x + e.size > p.x && e.y < p.y + p.height && e.y + e.size > p.y) {
-                gameState = 'GAME_OVER';
-                hud.classList.add('hidden');
-                gameOverScreen.classList.remove('hidden');
-                document.getElementById('final-name').innerText = playerName;
-                finalScoreEl.innerText = Math.floor(score);
-                saveHighScore(score, playerName);
-                bestScoreEl.innerText = getHighScores()[0].score;
-                return;
+           // Collision with Padding: Obstacle must penetrate deeper into the character
+if (e.x + e.size > p.x + p.hitPadding && 
+    e.x < p.x + p.width - p.hitPadding && 
+    e.y + e.size > p.y + p.hitPadding && 
+    e.y < p.y + p.height - p.hitPadding) {
+    
+    gameState = 'GAME_OVER';
+    showGameOver(); // Calling a helper to handle the new screen
+    return;
+}
             }
             if (e.y > canvas.height) enemies.splice(i, 1);
         }
@@ -197,6 +198,36 @@ function startGame() {
     updateHUD();
     if (animationId) cancelAnimationFrame(animationId);
     animate();
+}
+
+function showGameOver() {
+    hud.classList.add('hidden');
+    gameOverScreen.classList.remove('hidden');
+    document.getElementById('final-name').innerText = playerName;
+    finalScoreEl.innerText = Math.floor(score);
+    saveHighScore(score, playerName);
+    
+    const best = getHighScores()[0].score;
+    bestScoreEl.innerText = best;
+
+    // Add Share Button dynamically if it doesn't exist
+    if (!document.getElementById('share-btn')) {
+        const shareBtn = document.createElement('button');
+        shareBtn.id = 'share-btn';
+        shareBtn.className = 'share-btn';
+        shareBtn.innerText = 'CHALLENGE FRIENDS';
+        shareBtn.onclick = shareScore;
+        gameOverScreen.appendChild(shareBtn);
+    }
+}
+
+function shareScore() {
+    const text = `I just scored ${Math.floor(score)} on Seamless Dash! Can you beat my high score on the Poornata App? 🚀`;
+    if (navigator.share) {
+        navigator.share({ title: 'Seamless Dash', text: text, url: window.location.href });
+    } else {
+        alert("Challenge Copied: " + text);
+    }
 }
 
 // 6. EVENT LISTENERS
@@ -246,12 +277,23 @@ document.getElementById('continue-btn').addEventListener('click', () => {
     animate();
 });
 
-document.getElementById('pause-btn').addEventListener('click', () => {
+pauseBtn.addEventListener('click', () => {
     if (gameState === 'PLAYING') {
         gameState = 'PAUSED';
+        pauseBtn.innerText = '▶'; // Change to Play icon
         pauseMenu.classList.remove('hidden');
+    } else if (gameState === 'PAUSED') {
+        resumeGame();
     }
 });
+function resumeGame() {
+    gameState = 'PLAYING';
+    pauseBtn.innerText = '❚❚'; // Change back to Pause icon
+    pauseMenu.classList.add('hidden');
+    animate();
+}
+
+document.getElementById('resume-btn').addEventListener('click', resumeGame);
 
 document.getElementById('resume-btn').addEventListener('click', () => {
     gameState = 'PLAYING';
