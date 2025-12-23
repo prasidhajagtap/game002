@@ -11,8 +11,6 @@
     <img id="player-img" src="character.png" alt="Player" style="display:none;">
     
     <div id="ui-layer">
-        <button id="music-toggle" class="audio-btn">🔊</button>
-
         <div id="start-screen" class="screen-box">
             <div class="branding-header">
                 <h1 class="game-title">SEAMLESS DASH</h1>
@@ -45,16 +43,6 @@
                         <span class="val-msg" id="id-val">Numbers only please</span>
                     </div>
                     <button id="start-btn" class="main-btn" disabled>LOGIN & START</button>
-                    <p id="fields-warn" style="font-size: 10px; color: red; margin-top: 5px;">Please fill all fields correctly</p>
-                </div>
-            </div>
-
-            <div class="how-to-card">
-                <div class="how-to-header">HOW TO PLAY</div>
-                <div class="how-to-grid">
-                    <div class="how-item"><span>🚀</span><p>Avoid Orbs</p></div>
-                    <div class="how-item"><span>🛡️</span><p>Get Shield</p></div>
-                    <div class="how-item"><span>📈</span><p>Level up every 100pts</p></div>
                 </div>
             </div>
         </div>
@@ -62,10 +50,14 @@
         <div id="game-hud" class="hidden">
             <div class="hud-top">
                 <div class="stat-pill">SCORE: <span id="score">0</span></div>
-                <div class="stat-pill">LVL: <span id="level">1</span></div>
                 <button id="pause-btn">❚❚</button>
+                <div class="stat-pill">LVL: <span id="level">1</span></div>
             </div>
             <div id="shield-indicator" class="hidden">🛡️ SHIELD: <span id="shield-timer">0</span>s</div>
+        </div>
+
+        <div id="ui-footer">
+            <button id="music-toggle" class="footer-audio-btn">🔊 Sound On</button>
         </div>
 
         <div id="level-modal" class="hidden overlay-modal">
@@ -79,10 +71,7 @@
 
         <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
-                <div class="share-header">
-                    <h1 class="go-title">DASH OVER</h1>
-                    <p>Powered by Seamex</p>
-                </div>
+                <h1 class="go-title">DASH OVER</h1>
                 <div class="final-stats">
                     <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
                     <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
