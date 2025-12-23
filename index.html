@@ -20,32 +20,41 @@
                 <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
             </div>
 
-            <div class="high-score-box">
-                <h4>🏆 TOP 3 SCORES</h4>
-                <table id="score-table">
-                    <thead><tr><th>Rank</th><th>Name</th><th>Score</th></tr></thead>
-                    <tbody id="score-body"></tbody>
-                </table>
+            <div id="welcome-back" class="hidden">
+                <p>Welcome back, <strong id="last-player-display"></strong>!</p>
+                <button id="quick-start-btn">CONTINUE DASHING</button>
+                <button id="change-user-btn" class="text-link">Not you? Change User</button>
             </div>
 
-            <div class="login-form">
-                <div class="input-group">
-                    <label>Employee Name</label>
-                    <input type="text" id="player-name" placeholder="Letters only" autocomplete="off">
+            <div id="login-section">
+                <div class="high-score-box">
+                    <h4>🏆 TOP 3 SCORES</h4>
+                    <table id="score-table">
+                        <thead><tr><th>Rank</th><th>Name</th><th>Score</th></tr></thead>
+                        <tbody id="score-body"></tbody>
+                    </table>
                 </div>
-                <div class="input-group">
-                    <label>Poornata ID</label>
-                    <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10">
+
+                <div class="login-form">
+                    <div class="input-group">
+                        <label>Employee Name</label>
+                        <input type="text" id="player-name" placeholder="Letters only">
+                        <small class="error-hint" id="name-error">Letters only, please!</small>
+                    </div>
+                    <div class="input-group">
+                        <label>Poornata ID</label>
+                        <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10">
+                        <small class="error-hint" id="id-error">Numbers only, please!</small>
+                    </div>
+                    <button id="start-btn" disabled>START DASHING</button>
                 </div>
-                <button id="start-btn" disabled>START DASHING</button>
-                <p id="validation-hint">Please fill all fields correctly</p>
             </div>
 
             <div class="how-to-card">
                 <div class="how-to-grid">
                     <div class="how-item"><span>🚀</span><p>Dodge</p></div>
                     <div class="how-item"><span>🛡️</span><p>Shield</p></div>
-                    <div class="how-item"><span>💡</span><p>Trivia</p></div>
+                    <div class="how-item"><span>📈</span><p>Level Up<br>@100 pts</p></div>
                 </div>
             </div>
         </div>
@@ -59,20 +68,10 @@
             <div id="shield-status" class="hidden">🛡️ <span id="shield-timer">0</span>s</div>
         </div>
 
-        <div id="pause-menu" class="hidden overlay-modal">
-            <h2>PAUSED</h2>
-            <button id="resume-btn">RESUME</button>
-        </div>
-
-        <div id="level-modal" class="hidden overlay-modal">
-            <h2>🎉 LEVEL UP!</h2>
-            <div class="trivia-box"><p id="trivia-text"></p></div>
-            <button id="continue-btn">CONTINUE</button>
-        </div>
-
         <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
-                <h1 class="go-title">GAME OVER</h1>
+                <img src="NEW Seamex logo.png" class="share-logo">
+                <h1 class="go-title">DASH COMPLETE!</h1>
                 <div class="final-stats">
                     <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
                     <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
