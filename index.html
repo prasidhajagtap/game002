@@ -15,14 +15,14 @@
 
         <div id="start-screen" class="screen-box">
             <div class="branding-header">
+                <h1 class="game-title">SEAMLESS DASH</h1>
                 <p class="powered-text">POWERED BY</p>
                 <img src="NEW Seamex logo.png" alt="Seamex" class="responsive-logo">
-                <p class="game-subtitle">SEAMLESS DASH</p>
             </div>
 
             <div id="returning-user-section" class="hidden">
-                <p class="welcome-text">Welcome back, <span id="display-name"></span>!</p>
-                <button id="quick-start-btn">START DASHING</button>
+                <p class="welcome-text">Welcome back, <span id="display-name">User</span>!</p>
+                <button id="quick-start-btn" class="main-btn">START DASHING</button>
                 <button id="change-user-link">Not you? Change User</button>
             </div>
 
@@ -38,13 +38,14 @@
                 <div class="login-form">
                     <div class="input-group">
                         <input type="text" id="player-name" placeholder="Employee Name (Letters Only)" autocomplete="off">
-                        <span class="val-msg" id="name-val">Only letters allowed</span>
+                        <span class="val-msg" id="name-val">Letters only please</span>
                     </div>
                     <div class="input-group">
                         <input type="tel" id="player-id" placeholder="Poornata ID (Numbers Only)" maxlength="10">
-                        <span class="val-msg" id="id-val">Only numbers allowed</span>
+                        <span class="val-msg" id="id-val">Numbers only please</span>
                     </div>
-                    <button id="start-btn" disabled>LOGIN & START</button>
+                    <button id="start-btn" class="main-btn" disabled>LOGIN & START</button>
+                    <p id="fields-warn" style="font-size: 10px; color: red; margin-top: 5px;">Please fill all fields correctly</p>
                 </div>
             </div>
 
@@ -53,40 +54,42 @@
                 <div class="how-to-grid">
                     <div class="how-item"><span>🚀</span><p>Avoid Orbs</p></div>
                     <div class="how-item"><span>🛡️</span><p>Get Shield</p></div>
-                    <div class="how-item"><span>📈</span><p>+1 Level / 100pts</p></div>
+                    <div class="how-item"><span>📈</span><p>Level up every 100pts</p></div>
                 </div>
             </div>
         </div>
 
         <div id="game-hud" class="hidden">
-            <div class="hud-content">
-                <div class="stat">SCORE: <span id="score">0</span></div>
-                <div class="stat">LVL: <span id="level">1</span></div>
+            <div class="hud-top">
+                <div class="stat-pill">SCORE: <span id="score">0</span></div>
+                <div class="stat-pill">LVL: <span id="level">1</span></div>
                 <button id="pause-btn">❚❚</button>
             </div>
-            <div id="shield-bar" class="hidden">🛡️ SHIELD ACTIVE: <span id="shield-timer">0</span>s</div>
+            <div id="shield-indicator" class="hidden">🛡️ SHIELD: <span id="shield-timer">0</span>s</div>
         </div>
 
         <div id="level-modal" class="hidden overlay-modal">
             <h2>🎉 LEVEL UP!</h2>
             <div class="trivia-box">
-                <strong>Seamex Fact:</strong>
-                <p id="trivia-text">Loading...</p>
+                <p class="trivia-label">SEAMEX TRIVIA</p>
+                <p id="trivia-text"></p>
             </div>
-            <button id="continue-btn">KEEP DASHING</button>
+            <button id="continue-btn" class="main-btn">CONTINUE DASH</button>
         </div>
 
         <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
-                <img src="NEW Seamex logo.png" class="share-logo">
-                <h1 class="go-title">DASH OVER</h1>
+                <div class="share-header">
+                    <h1 class="go-title">DASH OVER</h1>
+                    <p>Powered by Seamex</p>
+                </div>
                 <div class="final-stats">
                     <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
                     <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
                 </div>
             </div>
             <button id="share-btn" class="share-btn">CHALLENGE FRIENDS 🚀</button>
-            <button id="restart-btn" class="secondary-btn">PLAY AGAIN</button>
+            <button id="restart-btn" class="main-btn">PLAY AGAIN</button>
         </div>
     </div>
 
