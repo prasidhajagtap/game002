@@ -2,39 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Poornata Jump Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Seamex Seamless Dash</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="login-container">
-        <div class="login-box">
-            <h1>POORNATA JUMP MASTER</h1>
-            <p>Please enter your details to play.</p>
+
+    <img id="player-img" src="character.png" alt="Player Character" style="display:none;">
+
+    <div id="ui-layer">
+        
+        <div id="game-hud" class="hidden">
+            <div class="hud-top">
+                <div id="score-board">Score: <span id="score">0</span></div>
+                <button id="pause-btn">❚❚</button>
+            </div>
+            <div id="level-board">Level: <span id="level">1</span></div>
+        </div>
+
+        <div id="pause-menu" class="hidden">
+            <h2>GAME PAUSED</h2>
+            <button id="resume-btn">RESUME</button>
+        </div>
+
+        <div id="start-screen">
+            <div class="logo-container">
+                <span class="logo-s">S</span><span class="logo-text">eamex</span>
+                <div class="tagline">seamless experience always</div>
+            </div>
             
-            <div class="input-group">
-                <label>Full Name (Alphabets Only)</label>
-                <input type="text" id="username" placeholder="Name" autocomplete="off">
+            <div class="high-score-box">
+                <h4>🏆 Top 3 High Scores</h4>
+                <ul id="high-score-list">
+                    <li>-</li>
+                    <li>-</li>
+                    <li>-</li>
+                </ul>
             </div>
 
-            <div class="input-group">
-                <label>Poornata ID (Numbers Only)</label>
-                <input type="number" id="poornataId" placeholder="Poornata ID" inputmode="numeric">
+            <div class="login-form">
+                <div class="input-group">
+                    <label>Employee Name</label>
+                    <input type="text" id="player-name" placeholder="Enter Name" autocomplete="off">
+                    <span class="error-msg" id="name-error">Letters only (No numbers/symbols)</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Poornata ID</label>
+                    <input type="tel" id="player-id" placeholder="Enter ID" maxlength="10" autocomplete="off">
+                    <span class="error-msg" id="id-error">Numbers only (Must be entered)</span>
+                </div>
+
+                <button id="start-btn">START GAME</button>
             </div>
 
-            <button id="start-btn">START GAME</button>
-            <p id="error-msg" class="hidden"></p>
-            <p class="small-link"><a href="admin.html">View Player Stats</a></p>
+            <div class="instructions">
+                <h4>How to Play:</h4>
+                <ol>
+                    <li>Enter your Name & ID to begin.</li>
+                    <li><strong>Touch & Drag</strong> to move the character.</li>
+                    <li>Dodge the falling <strong>Red Balls</strong>.</li>
+                    <li>Survive to <strong>Level Up</strong> and learn Seamex trivia!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="level-modal" class="hidden">
+            <h2>🎉 LEVEL UP! 🎉</h2>
+            <div class="trivia-box">
+                <h3>Did you know?</h3>
+                <p id="trivia-text">Trivia goes here...</p>
+            </div>
+            <button id="continue-btn">CONTINUE</button>
+        </div>
+
+        <div id="game-over-screen" class="hidden">
+            <h1>GAME OVER</h1>
+            <p>Well played, <span id="final-name">User</span>!</p>
+            
+            <div class="final-stats">
+                <div class="stat-box">
+                    <span>Your Score</span>
+                    <span id="final-score" class="big-num">0</span>
+                </div>
+                <div class="stat-box">
+                    <span>Personal Best</span>
+                    <span id="best-score" class="big-num">0</span>
+                </div>
+            </div>
+
+            <button id="restart-btn">PLAY AGAIN</button>
         </div>
     </div>
 
-    <div id="game-container" class="hidden">
-        <canvas id="gameCanvas"></canvas>
-        <div id="ui-layer">
-            <span id="score-display">Score: 0</span>
-        </div>
-    </div>
+    <canvas id="gameCanvas"></canvas>
 
-    <script src="game.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
