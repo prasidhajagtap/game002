@@ -10,7 +10,10 @@ const triviaList = [
     "Poornata's mobile app allows HR tasks to be completed on the go.",
     "Seamex aims for a 'Seamless Experience Always' in HR service delivery."
 ];
-
+// Add to your variable declarations at the top
+let particles = []; 
+const bgMusic = new Audio('https://assets.mixkit.co/active_storage/sfx/123/123-preview.mp3'); // Simple rhythmic loop
+bgMusic.loop = true;
 let player, enemies = [], powerups = [], particles = [], gameState = 'START';
 let score = 0, level = 1, playerName = "", poornataId = "", bgOffset = 0;
 let shieldActive = false, shieldTime = 0, isPaused = false;
@@ -26,12 +29,21 @@ let isMuted = false;
 
 // UNLOCK AUDIO for Mobile Browsers
 function unlockAudio() {
+    bgMusic.play().catch(() => {}); // Start background music
+    Object.values(sounds).forEach(sound => { function unlockAudio() {
     Object.values(sounds).forEach(sound => {
         sound.play().then(() => {
             sound.pause();
             sound.currentTime = 0;
         }).catch(() => {/* Silent catch for pre-interaction */});
     });
+        // In Pause Listener
+bgMusic.pause();
+
+// In Resume Listener
+if(!isMuted) bgMusic.play();
+    
+} });
 }
 
 // 1. IMPROVED GRID BACKGROUND
@@ -57,15 +69,17 @@ class Player {
     }
     draw() {
         ctx.save();
-        if (shieldActive) {
-            ctx.strokeStyle = '#0984e3';
-            ctx.lineWidth = 6;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#0984e3';
-            ctx.beginPath();
-            ctx.arc(this.x + 35, this.y + 35, 48, 0, Math.PI * 2);
-            ctx.stroke();
-        }
+        // Shield Flickering
+if (shieldActive) {
+    // Start flickering when less than 3 seconds remain
+    if (shieldTime > 3 || Math.floor(Date.now() / 100) % 2 === 0) {
+        ctx.strokeStyle = '#0984e3';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(this.x + 35, this.y + 35, 48, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+}
         const img = document.getElementById('player-img');
         if (img.complete && img.naturalWidth !== 0) {
             ctx.drawImage(img, this.x, this.y, this.w, this.h);
@@ -99,6 +113,13 @@ function animate() {
             document.getElementById('shield-indicator').classList.add('hidden');
         }
     }
+    // Particle Logic
+particles.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+    ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size); ctx.restore();
+    if (p.alpha <= 0) particles.splice(i, 1);
+});
 
     player.draw();
 
@@ -135,14 +156,18 @@ function animate() {
         ctx.arc(e.x + 15, e.y + 15, 15, 0, Math.PI * 2);
         ctx.fill();
 
-        if (e.x < player.x + 55 && e.x + 30 > player.x + 15 && e.y < player.y + 55 && e.y + 30 > player.y + 15) {
-            if (shieldActive) {
-                if (!isMuted) sounds.hit.play();
-                enemies.splice(i, 1);
-            } else {
-                gameOver();
-            }
-        }
+if (shieldActive) {
+    if (!isMuted) sounds.hit.play();
+    // Generate Explosion Particles
+    for (let j = 0; j < 10; j++) {
+        particles.push({
+            x: e.x + 15, y: e.y + 15,
+            vx: Math.random() * 6 - 3, vy: Math.random() * 6 - 3,
+            size: Math.random() * 4 + 2, alpha: 1, color: '#FFD700'
+        });
+    }
+    enemies.splice(i, 1);
+}
         if (e.y > canvas.height) enemies.splice(i, 1);
     });
 
@@ -225,6 +250,20 @@ document.getElementById('continue-btn').addEventListener('click', () => {
     document.getElementById('level-modal').classList.add('hidden'); 
     gameState = 'PLAYING'; 
     animate(); 
+});
+document.getElementById('share-btn').addEventListener('click', () => {
+    const shareText = `🚀 I just dashed ${Math.floor(score)} points as ${playerName}! \n\nCan you beat my score? Download the Seamex App here: https://seamex.app.link/download`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Seamless Dash Challenge',
+            text: shareText
+        }).catch(err => console.log(err));
+    } else {
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert("Challenge message & app link copied to clipboard!");
+        });
+    }
 });
 
 window.addEventListener('touchmove', (e) => { 
