@@ -13,17 +13,17 @@
     <div id="ui-layer">
         <button id="music-toggle" class="audio-btn">🔊</button>
 
-        <div id="start-screen">
-            <div id="main-branding">
-                <div class="powered-by">SEAMLESS DASH</div>
-                <div class="sub-text">POWERED BY</div>
-                <img src="NEW Seamex logo.png" alt="Seamex Logo" class="main-logo">
+        <div id="start-screen" class="screen-box">
+            <div class="branding-header">
+                <p class="powered-text">POWERED BY</p>
+                <img src="NEW Seamex logo.png" alt="Seamex" class="responsive-logo">
+                <p class="game-subtitle">SEAMLESS DASH</p>
             </div>
 
-            <div id="welcome-back" class="hidden">
-                <p>Welcome back, <strong id="last-player-display"></strong>!</p>
-                <button id="quick-start-btn">CONTINUE DASHING</button>
-                <button id="change-user-btn" class="text-link">Not you? Change User</button>
+            <div id="returning-user-section" class="hidden">
+                <p class="welcome-text">Welcome back, <span id="display-name"></span>!</p>
+                <button id="quick-start-btn">START DASHING</button>
+                <button id="change-user-link">Not you? Change User</button>
             </div>
 
             <div id="login-section">
@@ -37,41 +37,49 @@
 
                 <div class="login-form">
                     <div class="input-group">
-                        <label>Employee Name</label>
-                        <input type="text" id="player-name" placeholder="Letters only">
-                        <small class="error-hint" id="name-error">Letters only, please!</small>
+                        <input type="text" id="player-name" placeholder="Employee Name (Letters Only)" autocomplete="off">
+                        <span class="val-msg" id="name-val">Only letters allowed</span>
                     </div>
                     <div class="input-group">
-                        <label>Poornata ID</label>
-                        <input type="tel" id="player-id" placeholder="Numbers only" maxlength="10">
-                        <small class="error-hint" id="id-error">Numbers only, please!</small>
+                        <input type="tel" id="player-id" placeholder="Poornata ID (Numbers Only)" maxlength="10">
+                        <span class="val-msg" id="id-val">Only numbers allowed</span>
                     </div>
-                    <button id="start-btn" disabled>START DASHING</button>
+                    <button id="start-btn" disabled>LOGIN & START</button>
                 </div>
             </div>
 
             <div class="how-to-card">
+                <div class="how-to-header">HOW TO PLAY</div>
                 <div class="how-to-grid">
-                    <div class="how-item"><span>🚀</span><p>Dodge</p></div>
-                    <div class="how-item"><span>🛡️</span><p>Shield</p></div>
-                    <div class="how-item"><span>📈</span><p>Level Up<br>@100 pts</p></div>
+                    <div class="how-item"><span>🚀</span><p>Avoid Orbs</p></div>
+                    <div class="how-item"><span>🛡️</span><p>Get Shield</p></div>
+                    <div class="how-item"><span>📈</span><p>+1 Level / 100pts</p></div>
                 </div>
             </div>
         </div>
 
         <div id="game-hud" class="hidden">
-            <div class="hud-left">
-                <div id="score-board">Score: <span id="score">0</span></div>
-                <div id="level-board">Lvl: <span id="level">1</span></div>
+            <div class="hud-content">
+                <div class="stat">SCORE: <span id="score">0</span></div>
+                <div class="stat">LVL: <span id="level">1</span></div>
+                <button id="pause-btn">❚❚</button>
             </div>
-            <button id="pause-btn">❚❚</button>
-            <div id="shield-status" class="hidden">🛡️ <span id="shield-timer">0</span>s</div>
+            <div id="shield-bar" class="hidden">🛡️ SHIELD ACTIVE: <span id="shield-timer">0</span>s</div>
+        </div>
+
+        <div id="level-modal" class="hidden overlay-modal">
+            <h2>🎉 LEVEL UP!</h2>
+            <div class="trivia-box">
+                <strong>Seamex Fact:</strong>
+                <p id="trivia-text">Loading...</p>
+            </div>
+            <button id="continue-btn">KEEP DASHING</button>
         </div>
 
         <div id="game-over-screen" class="hidden overlay-modal">
             <div id="capture-area">
                 <img src="NEW Seamex logo.png" class="share-logo">
-                <h1 class="go-title">DASH COMPLETE!</h1>
+                <h1 class="go-title">DASH OVER</h1>
                 <div class="final-stats">
                     <div class="stat-box"><span>SCORE</span><span id="final-score" class="big-num">0</span></div>
                     <div class="stat-box"><span>BEST</span><span id="best-score" class="big-num">0</span></div>
