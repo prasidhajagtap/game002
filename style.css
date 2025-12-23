@@ -124,17 +124,42 @@ button:active { transform: scale(0.95); }
 .instructions ol { margin: 0; padding-left: 20px; font-size: 12px; color: #555; line-height: 1.5; }
 
 /* HUD */
+/* Update the HUD positioning and Level board */
 #game-hud {
-    position: absolute; top: 15px; left: 15px;
-    width: calc(100% - 30px);
+    position: absolute; 
+    top: 15px; 
+    left: 0;
+    width: 100%; /* Full width to allow centering */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the Level Tab */
     pointer-events: none;
 }
-.hud-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-#score-board, #level-board {
-    font-size: 18px; font-weight: bold; color: #A01018;
+
+.hud-top { 
+    display: flex; 
+    justify-content: space-between; 
+    width: 90%; /* Keeps score and pause button at edges */
+    align-items: center; 
+}
+
+#level-board {
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #A01018;
     background: rgba(255,255,255,0.95);
-    padding: 8px 15px; border-radius: 20px;
+    padding: 5px 20px; 
+    border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 5px;
+    width: fit-content; /* FIX: Prevents stretching */
+}
+
+/* Share Button Style */
+.share-btn {
+    background: #00C853; /* Green for success/share */
+    margin-top: 10px;
+}
 }
 #pause-btn {
     pointer-events: auto;
