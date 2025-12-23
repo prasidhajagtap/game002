@@ -4,180 +4,135 @@ const startScreen = document.getElementById('start-screen');
 const hud = document.getElementById('game-hud');
 const levelModal = document.getElementById('level-modal');
 const gameOverScreen = document.getElementById('game-over-screen');
-const pauseMenu = document.getElementById('pause-menu');
 const playerImg = document.getElementById('player-img');
 const nameInput = document.getElementById('player-name');
 const idInput = document.getElementById('player-id');
-const nameError = document.getElementById('name-error');
-const idError = document.getElementById('id-error');
-const scoreEl = document.getElementById('score');
-const levelEl = document.getElementById('level');
-const triviaText = document.getElementById('trivia-text');
-const finalScoreEl = document.getElementById('final-score');
-const bestScoreEl = document.getElementById('best-score');
+const musicToggle = document.getElementById('music-toggle');
 
-// Game State
-let player = null, enemies = [], confettis = [], gameState = 'START';
-let score = 0, level = 1, speedMultiplier = 1, nextLevelScore = 100, animationId = null, playerName = "";
+const sounds = {
+    lvlUp: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'),
+    over: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
+    power: new Audio('https://assets.mixkit.co/active_storage/sfx/1103/1103-preview.mp3')
+};
+let isMuted = false;
+
+musicToggle.addEventListener('click', () => {
+    isMuted = !isMuted;
+    musicToggle.innerText = isMuted ? "🔇" : "🔊";
+    Object.values(sounds).forEach(s => s.muted = isMuted);
+});
+
+let player = null, enemies = [], powerups = [], gameState = 'START';
+let score = 0, level = 1, speedMultiplier = 1, nextLevelScore = 100, playerName = "";
+let shieldActive = false, shieldTimeRemaining = 0;
 
 const triviaFacts = [
-    "Seamex was established in 2017 to provide a seamless HR experience.",
+    "Seamex acts as a single point of contact for the employee lifecycle.",
     "Seamex is powered by 'Poornata', the Group's HRMS software.",
-    "Seamex acts as a single point of contact for the entire employee lifecycle.",
     "Seamex handles everything from Onboarding to Exit Management.",
-    "Core Value: 'Respect for all' is a key work ethic at Seamex.",
-    "Seamex uses 'Cornerstone on Demand' for employee learning.",
-    "Seamex is located in Airoli, Navi Mumbai."
+    "Core Value: 'Respect for all' is a key work ethic at Seamex."
 ];
 
-// Classes
 class Player {
     constructor() {
-        this.width = 80; this.height = 80; // Larger size
-        this.x = canvas.width / 2 - 40;
-        this.y = canvas.height - 140;
-        this.hitPadding = 22; // Forgiving collision
+        this.width = 80; this.height = 80;
+        this.x = canvas.width/2 - 40; this.y = canvas.height - 135;
     }
     draw() {
-        if (playerImg.complete && playerImg.naturalWidth !== 0) {
-            ctx.drawImage(playerImg, this.x, this.y, this.width, this.height);
-        } else {
-            ctx.fillStyle = '#FFC107'; ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (shieldActive) {
+            ctx.strokeStyle = (shieldTimeRemaining < 5 && Math.floor(Date.now()/200)%2) ? '#D32F2F' : '#0984e3';
+            ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(this.x + 40, this.y + 40, 52, 0, Math.PI * 2); ctx.stroke();
         }
+        if (playerImg.complete) ctx.drawImage(playerImg, this.x, this.y, this.width, this.height);
+        else { ctx.fillStyle = '#FFC107'; ctx.fillRect(this.x, this.y, this.width, this.height); }
     }
-    moveTo(x) {
-        this.x = x - this.width / 2;
-        this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
-    }
+    moveTo(x) { this.x = Math.max(0, Math.min(canvas.width - this.width, x - this.width/2)); }
 }
 
 class Enemy {
     constructor() {
         this.size = Math.random() * 20 + 30;
         this.x = Math.random() * (canvas.width - this.size);
-        this.y = -50;
-        this.speed = (Math.random() * 2 + 3.5) * speedMultiplier;
+        this.y = -60; this.speed = (Math.random() * 2 + 3.2) * speedMultiplier;
     }
     update() { this.y += this.speed; }
-    draw() {
-        ctx.fillStyle = '#D32F2F';
-        ctx.beginPath(); ctx.arc(this.x + this.size/2, this.y + this.size/2, this.size/2, 0, Math.PI*2); ctx.fill();
-    }
+    draw() { ctx.fillStyle = '#D32F2F'; ctx.beginPath(); ctx.arc(this.x+this.size/2, this.y+this.size/2, this.size/2, 0, Math.PI*2); ctx.fill(); }
 }
 
-class Confetti {
-    constructor() {
-        this.x = Math.random() * canvas.width; this.y = Math.random() * -canvas.height;
-        this.color = ['#FFC107', '#D32F2F', '#A01018', '#00C853'][Math.floor(Math.random() * 4)];
-        this.size = Math.random() * 6 + 4; this.speedY = Math.random() * 4 + 2;
-    }
-    update() { this.y += this.speedY; if (this.y > canvas.height) this.y = -20; }
-    draw() { ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); }
-}
-
-// Helpers
-function updateHUD() { scoreEl.innerText = Math.floor(score); levelEl.innerText = level; }
-
-function getHighScores() {
-    const s = localStorage.getItem('seamexScores');
-    return s ? JSON.parse(s) : [];
+class PowerUp {
+    constructor() { this.size = 35; this.x = Math.random() * (canvas.width - 35); this.y = -50; this.speed = 3; }
+    update() { this.y += this.speed; }
+    draw() { ctx.font = "28px Arial"; ctx.fillText("🛡️", this.x, this.y + 25); }
 }
 
 function updateHighScoreDisplay() {
-    const scores = getHighScores();
-    const list = document.getElementById('high-score-list');
-    list.innerHTML = scores.length ? scores.map(s => `<li>${s.score} - ${s.name}</li>`).join('') : '<li>-</li>';
-}
-
-function startGame() {
-    document.body.classList.add('game-active');
-    startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
-    hud.classList.remove('hidden');
-    gameState = 'PLAYING'; score = 0; level = 1; speedMultiplier = 1; nextLevelScore = 100;
-    enemies = []; confettis = []; player = new Player();
-    updateHUD(); if (animationId) cancelAnimationFrame(animationId);
-    animate();
-}
-
-function endGame() {
-    gameState = 'GAME_OVER';
-    document.body.classList.remove('game-active');
-    hud.classList.add('hidden'); gameOverScreen.classList.remove('hidden');
-    document.getElementById('final-name').innerText = playerName;
-    finalScoreEl.innerText = Math.floor(score);
-    
-    let scores = getHighScores();
-    scores.push({ score: Math.floor(score), name: playerName });
-    scores.sort((a,b) => b.score - a.score);
-    localStorage.setItem('seamexScores', JSON.stringify(scores.slice(0, 3)));
-    
-    bestScoreEl.innerText = scores[0].score;
-    updateHighScoreDisplay();
+    const scores = JSON.parse(localStorage.getItem('seamexScores') || '[]').filter(s => !s.expiry || s.expiry > Date.now());
+    document.getElementById('high-score-list').innerHTML = scores.length ? scores.map(s => `<li>${s.score} - ${s.name}</li>`).join('') : '<li>-</li>';
 }
 
 function animate() {
     if (gameState === 'PAUSED' || gameState === 'GAME_OVER') return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (gameState === 'LEVEL_UP') {
-        player.draw(); enemies.forEach(e => { e.draw(); });
-        confettis.forEach(c => { c.update(); c.draw(); });
-    } else {
-        score += 0.15; updateHUD();
-        if (score >= nextLevelScore) {
-            gameState = 'LEVEL_UP'; level++; nextLevelScore += 100; speedMultiplier += 0.12;
-            triviaText.innerText = triviaFacts[(level - 2) % triviaFacts.length];
-            confettis = Array.from({ length: 80 }, () => new Confetti());
-            levelModal.classList.remove('hidden');
+    if (gameState === 'PLAYING') {
+        score += 0.12; document.getElementById('score').innerText = Math.floor(score);
+        if (shieldActive) {
+            shieldTimeRemaining -= 0.016;
+            document.getElementById('shield-timer').innerText = Math.ceil(shieldTimeRemaining);
+            if (shieldTimeRemaining <= 0) { shieldActive = false; document.getElementById('shield-status').classList.add('hidden'); }
         }
+        if (score >= nextLevelScore) {
+            gameState = 'LEVEL_UP'; level++; nextLevelScore += 120;
+            speedMultiplier += (level <= 5) ? 0.05 : 0.15;
+            document.getElementById('trivia-text').innerText = triviaFacts[level%triviaFacts.length];
+            sounds.lvlUp.play(); levelModal.classList.remove('hidden');
+        }
+
         player.draw();
-        if (Math.random() < 0.04) enemies.push(new Enemy());
-        for (let i = enemies.length - 1; i >= 0; i--) {
-            let e = enemies[i]; e.update(); e.draw();
-            if (e.x + e.size > player.x + player.hitPadding && e.x < player.x + player.width - player.hitPadding &&
-                e.y + e.size > player.y + player.hitPadding && e.y < player.y + player.height - player.hitPadding) {
-                endGame(); return;
+        if (Math.random() < ((level > 5) ? 0.06 : 0.038)) enemies.push(new Enemy());
+        if (Math.random() < 0.003) powerups.push(new PowerUp());
+
+        powerups.forEach((p, i) => {
+            p.update(); p.draw();
+            if (p.x < player.x+80 && p.x+35 > player.x && p.y < player.y+80 && p.y+35 > player.y) {
+                shieldActive = true; shieldTimeRemaining = 30; sounds.power.play();
+                document.getElementById('shield-status').classList.remove('hidden'); powerups.splice(i,1);
+            }
+        });
+
+        enemies.forEach((e, i) => {
+            e.update(); e.draw();
+            if (!shieldActive && e.x+e.size > player.x+22 && e.x < player.x+58 && e.y+e.size > player.y+22 && e.y < player.y+58) {
+                gameState = 'GAME_OVER'; sounds.over.play();
+                document.body.classList.replace('game-active', 'game-over');
+                hud.classList.add('hidden'); gameOverScreen.classList.remove('hidden');
+                document.getElementById('final-score').innerText = Math.floor(score);
+                const expiry = Date.now() + (90 * 24 * 60 * 60 * 1000);
+                let s = JSON.parse(localStorage.getItem('seamexScores') || '[]');
+                s.push({ score: Math.floor(score), name: playerName, expiry });
+                s.sort((a,b) => b.score - a.score);
+                localStorage.setItem('seamexScores', JSON.stringify(s.slice(0, 3)));
             }
             if (e.y > canvas.height) enemies.splice(i, 1);
-        }
-    }
-    animationId = requestAnimationFrame(animate);
+        });
+    } else { player.draw(); enemies.forEach(e => e.draw()); }
+    requestAnimationFrame(animate);
 }
-
-// Listeners
-window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; if(player) player.y = canvas.height - 140; });
-canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
 document.getElementById('start-btn').addEventListener('click', () => {
     const n = nameInput.value.trim(), id = idInput.value.trim();
-    if (!n || /[^a-zA-Z\s]/.test(n)) { nameError.style.display = 'block'; return; }
-    if (!id || !/^\d+$/.test(id)) { idError.style.display = 'block'; return; }
-    playerName = n; nameError.style.display = 'none'; idError.style.display = 'none';
-    startGame();
+    if (!n || !/^[a-zA-Z\s]+$/.test(n) || !/^\d+$/.test(id)) return;
+    playerName = n; gameState = 'PLAYING';
+    document.body.classList.add('game-active');
+    startScreen.classList.add('hidden'); hud.classList.remove('hidden');
+    score = 0; level = 1; speedMultiplier = 1; nextLevelScore = 100;
+    enemies = []; powerups = []; shieldActive = false;
+    player = new Player(); animate();
 });
 
-const handleInput = (x) => { if (player && (gameState === 'PLAYING' || gameState === 'LEVEL_UP')) player.moveTo(x); };
-window.addEventListener('mousemove', (e) => handleInput(e.clientX));
-window.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e.touches[0].clientX); }, { passive: false });
-
-document.getElementById('pause-btn').addEventListener('click', () => {
-    if (gameState === 'PLAYING') {
-        gameState = 'PAUSED'; document.getElementById('pause-btn').innerText = '▶'; pauseMenu.classList.remove('hidden');
-    } else if (gameState === 'PAUSED') {
-        gameState = 'PLAYING'; document.getElementById('pause-btn').innerText = '❚❚'; pauseMenu.classList.add('hidden'); animate();
-    }
-});
-
-document.getElementById('share-btn').addEventListener('click', () => {
-    const msg = `I scored ${Math.floor(score)} on Seamless Dash! I challenge you to beat it on your Poornata App! 🚀`;
-    if (navigator.share) {
-        navigator.share({ title: 'Seamless Dash Challenge', text: msg, url: window.location.href });
-    } else {
-        navigator.clipboard.writeText(msg); alert("Challenge copied to clipboard! Share it with your colleagues.");
-    }
-});
-
-document.getElementById('continue-btn').addEventListener('click', () => { levelModal.classList.add('hidden'); gameState = 'PLAYING'; confettis = []; animate(); });
-document.getElementById('resume-btn').addEventListener('click', () => { gameState = 'PLAYING'; document.getElementById('pause-btn').innerText = '❚❚'; pauseMenu.classList.add('hidden'); animate(); });
-document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('continue-btn').addEventListener('click', () => { levelModal.classList.add('hidden'); gameState = 'PLAYING'; });
+document.getElementById('restart-btn').addEventListener('click', () => location.reload());
+window.addEventListener('mousemove', (e) => player && player.moveTo(e.clientX));
+window.addEventListener('touchmove', (e) => { e.preventDefault(); player && player.moveTo(e.touches[0].clientX); }, { passive: false });
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 updateHighScoreDisplay();
