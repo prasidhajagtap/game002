@@ -107,23 +107,34 @@ idInput.addEventListener('input', () => {
     }
 });
 
+// --- BUG FIX: ENSURE START ---
 document.getElementById('start-btn').addEventListener('click', () => {
     const nameVal = nameInput.value.trim();
     const idVal = idInput.value.trim();
     let valid = true;
 
-    if (nameVal.length < 2) {
+    // Strict Name Validation: No numbers or symbols
+    if (nameVal.length < 2 || /[^a-zA-Z\s]/.test(nameVal)) {
         nameError.style.display = 'block';
         valid = false;
     }
-    if (idVal.length === 0) {
+    // Strict ID Validation: Mandatory Numbers only
+    if (idVal.length === 0 || /[^0-9]/.test(idVal)) {
         idError.style.display = 'block';
         valid = false;
     }
 
     if (valid) {
         playerName = nameVal;
-        startGame();
+        
+        // Fail-safe: Start game even if image loading hangs
+        if (playerImg.complete) {
+            startGame();
+        } else {
+            console.warn("Character image not loaded yet. Starting with placeholder...");
+            playerImg.onload = startGame; // Start when loaded
+            setTimeout(startGame, 1000); // Or start anyway after 1s
+        }
     }
 });
 
@@ -222,13 +233,14 @@ let enemies = [];
 let confettis = [];
 
 function startGame() {
-    // Hide Screens
+    // Prevent double-starting if both timeout and onload trigger
+    if (gameState === 'PLAYING') return;
+
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
     pauseMenu.classList.add('hidden');
     hud.classList.remove('hidden');
     
-    // Reset State
     gameState = 'PLAYING';
     score = 0;
     level = 1;
@@ -241,6 +253,7 @@ function startGame() {
     confettis = [];
     
     updateHUD();
+    cancelAnimationFrame(animationId); // Clear any existing loops
     animate();
 }
 
