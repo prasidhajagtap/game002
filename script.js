@@ -1,8 +1,6 @@
-// 1. DECLARE ALL VARIABLES AT THE TOP
+// 1. SELECT UI ELEMENTS
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
-// UI Elements
 const startScreen = document.getElementById('start-screen');
 const hud = document.getElementById('game-hud');
 const levelModal = document.getElementById('level-modal');
@@ -20,20 +18,18 @@ const finalScoreEl = document.getElementById('final-score');
 const bestScoreEl = document.getElementById('best-score');
 const playerImg = document.getElementById('player-img');
 
-// Game State
-let player = null; // Defined early to avoid ReferenceErrors
+// 2. GLOBAL GAME STATE
+let player = null;
 let enemies = [];
 let confettis = [];
 let gameState = 'START';
 let score = 0;
 let level = 1;
-let frameCount = 0;
-let playerName = "";
 let speedMultiplier = 1;
 let nextLevelScore = 100;
-let animationId;
+let animationId = null;
+let playerName = "";
 
-// Seamex Trivia
 const triviaFacts = [
     "Seamex was established in 2017 to provide a seamless HR experience.",
     "Seamex is powered by 'Poornata', the Group's HRMS software.",
@@ -44,61 +40,48 @@ const triviaFacts = [
     "Seamex is located in Airoli, Navi Mumbai."
 ];
 
-// 2. RESIZE LOGIC
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    if (player) {
-        player.fixPosition();
-    }
+// 3. UI & HUD HELPERS (Defined before use)
+function updateHUD() {
+    scoreEl.innerText = Math.floor(score);
+    levelEl.innerText = level;
 }
-window.addEventListener('resize', resize);
-resize();
 
-// 3. INPUT VALIDATION
-nameInput.addEventListener('input', () => {
-    nameInput.value = nameInput.value.replace(/[^a-zA-Z\s]/g, '');
-});
-idInput.addEventListener('input', () => {
-    idInput.value = idInput.value.replace(/[^0-9]/g, '');
-});
+function getHighScores() {
+    const stored = localStorage.getItem('seamexScores');
+    return stored ? JSON.parse(stored) : [];
+}
 
-document.getElementById('start-btn').addEventListener('click', () => {
-    const nameVal = nameInput.value.trim();
-    const idVal = idInput.value.trim();
-    
-    if (!nameVal || /[^a-zA-Z\s]/.test(nameVal)) {
-        nameError.style.display = 'block';
-        return;
-    } else { nameError.style.display = 'none'; }
+function updateHighScoreDisplay() {
+    const scores = getHighScores();
+    highScoreList.innerHTML = scores.length 
+        ? scores.map(s => `<li>${s.score} - ${s.name}</li>`).join('') 
+        : '<li>No scores yet</li>';
+}
 
-    if (!idVal || !/^\d+$/.test(idVal)) {
-        idError.style.display = 'block';
-        return;
-    } else { idError.style.display = 'none'; }
+function saveHighScore(newScore, name) {
+    let scores = getHighScores();
+    scores.push({ score: Math.floor(newScore), name: name });
+    scores.sort((a, b) => b.score - a.score);
+    localStorage.setItem('seamexScores', JSON.stringify(scores.slice(0, 3)));
+    updateHighScoreDisplay();
+}
 
-    playerName = nameVal;
-    startGame();
-});
-
-// 4. CLASSES
+// 4. GAME CLASSES
 class Player {
     constructor() {
-        this.width = 65;
-        this.height = 65;
+        this.width = 60;
+        this.height = 60;
         this.x = canvas.width / 2 - this.width / 2;
         this.y = canvas.height - this.height - 50;
     }
     fixPosition() {
         this.y = canvas.height - this.height - 50;
-        if (this.x > canvas.width - this.width) this.x = canvas.width - this.width;
     }
     draw() {
         if (playerImg.complete && playerImg.naturalWidth !== 0) {
             ctx.drawImage(playerImg, this.x, this.y, this.width, this.height);
         } else {
-            // Fallback to Seamex Amber
-            ctx.fillStyle = '#FFC107';
+            ctx.fillStyle = '#FFC107'; // Seamex Amber
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     }
@@ -114,7 +97,7 @@ class Enemy {
         this.size = Math.random() * 20 + 30;
         this.x = Math.random() * (canvas.width - this.size);
         this.y = -this.size;
-        this.speed = (Math.random() * 2 + 4) * speedMultiplier;
+        this.speed = (Math.random() * 2 + 3.5) * speedMultiplier;
     }
     update() { this.y += this.speed; }
     draw() {
@@ -145,12 +128,62 @@ class Confetti {
     }
 }
 
-// 5. GAME ENGINE
+// 5. CORE GAME ENGINE
+function animate() {
+    if (gameState === 'PAUSED' || gameState === 'GAME_OVER') return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (gameState === 'LEVEL_UP') {
+        player.draw();
+        enemies.forEach(e => e.draw());
+        confettis.forEach(c => { c.update(); c.draw(); });
+    } else {
+        score += 0.15;
+        updateHUD();
+        
+        if (score >= nextLevelScore) {
+            gameState = 'LEVEL_UP';
+            level++;
+            nextLevelScore += 100;
+            speedMultiplier += 0.15;
+            triviaText.innerText = triviaFacts[(level - 2) % triviaFacts.length];
+            confettis = Array.from({ length: 100 }, () => new Confetti());
+            levelModal.classList.remove('hidden');
+        }
+
+        player.draw();
+        if (Math.random() < 0.04) enemies.push(new Enemy());
+
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            enemies[i].update();
+            enemies[i].draw();
+
+            const e = enemies[i];
+            const p = player;
+            // Collision
+            if (e.x < p.x + p.width && e.x + e.size > p.x && e.y < p.y + p.height && e.y + e.size > p.y) {
+                gameState = 'GAME_OVER';
+                hud.classList.add('hidden');
+                gameOverScreen.classList.remove('hidden');
+                document.getElementById('final-name').innerText = playerName;
+                finalScoreEl.innerText = Math.floor(score);
+                saveHighScore(score, playerName);
+                bestScoreEl.innerText = getHighScores()[0].score;
+                return;
+            }
+            if (e.y > canvas.height) enemies.splice(i, 1);
+        }
+    }
+    animationId = requestAnimationFrame(animate);
+}
+
 function startGame() {
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
-    hud.classList.remove('hidden');
     pauseMenu.classList.add('hidden');
+    levelModal.classList.add('hidden');
+    hud.classList.remove('hidden');
     
     gameState = 'PLAYING';
     score = 0;
@@ -166,99 +199,67 @@ function startGame() {
     animate();
 }
 
-function levelUp() {
-    gameState = 'LEVEL_UP';
-    level++;
-    nextLevelScore += 100;
-    speedMultiplier += 0.15;
-    triviaText.innerText = triviaFacts[(level - 2) % triviaFacts.length];
-    confettis = Array.from({ length: 100 }, () => new Confetti());
-    levelModal.classList.remove('hidden');
+// 6. EVENT LISTENERS
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    if (player) player.fixPosition();
 }
+window.addEventListener('resize', resize);
+resize();
 
-function endGame() {
-    gameState = 'GAME_OVER';
-    hud.classList.add('hidden');
-    gameOverScreen.classList.remove('hidden');
-    document.getElementById('final-name').innerText = playerName;
-    const fs = Math.floor(score);
-    finalScoreEl.innerText = fs;
-    saveHighScore(fs, playerName);
-    bestScoreEl.innerText = getHighScores()[0]?.score || fs;
-}
-
-function animate() {
-    if (gameState === 'PAUSED' || gameState === 'GAME_OVER') return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (gameState === 'LEVEL_UP') {
-        player.draw();
-        enemies.forEach(e => e.draw());
-        confettis.forEach(c => { c.update(); c.draw(); });
-    } else {
-        score += 0.15;
-        updateHUD();
-        if (score >= nextLevelScore) { levelUp(); }
-
-        player.draw();
-        if (Math.random() < 0.04) enemies.push(new Enemy());
-
-        for (let i = enemies.length - 1; i >= 0; i--) {
-            enemies[i].update();
-            enemies[i].draw();
-
-            const e = enemies[i];
-            const p = player;
-            // Collision Detection
-            if (e.x < p.x + p.width && e.x + e.size > p.x && e.y < p.y + p.height && e.y + e.size > p.y) {
-                endGame();
-                return;
-            }
-            if (e.y > canvas.height) enemies.splice(i, 1);
-        }
+document.getElementById('start-btn').addEventListener('click', () => {
+    const nameVal = nameInput.value.trim();
+    const idVal = idInput.value.trim();
+    
+    if (!nameVal || /[^a-zA-Z\s]/.test(nameVal)) {
+        nameError.style.display = 'block';
+        return;
     }
-    animationId = requestAnimationFrame(animate);
-}
+    if (!idVal || !/^\d+$/.test(idVal)) {
+        idError.style.display = 'block';
+        return;
+    }
 
-// 6. UTILS & CONTROLS
-function getHighScores() {
-    const stored = localStorage.getItem('seamexScores');
-    return stored ? JSON.parse(stored) : [];
-}
-function saveHighScore(newScore, name) {
-    let scores = getHighScores();
-    scores.push({ score: Math.floor(newScore), name: name });
-    scores.sort((a, b) => b.score - a.score);
-    localStorage.setItem('seamexScores', JSON.stringify(scores.slice(0, 3)));
-    updateHighScoreDisplay();
-}
-function updateHighScoreDisplay() {
-    const scores = getHighScores();
-    highScoreList.innerHTML = scores.length 
-        ? scores.map(s => `<li>${s.score} - ${s.name}</li>`).join('') 
-        : '<li>No scores yet</li>';
-}
-updateHighScoreDisplay();
+    nameError.style.display = 'none';
+    idError.style.display = 'none';
+    playerName = nameVal;
+    startGame();
+});
 
-const handleInput = (x) => { if (player && (gameState === 'PLAYING' || gameState === 'LEVEL_UP')) player.moveTo(x); };
+const handleInput = (x) => {
+    if (player && (gameState === 'PLAYING' || gameState === 'LEVEL_UP')) {
+        player.moveTo(x);
+    }
+};
+
 window.addEventListener('mousemove', (e) => handleInput(e.clientX));
-window.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e.touches[0].clientX); }, { passive: false });
+window.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    handleInput(e.touches[0].clientX);
+}, { passive: false });
 
 document.getElementById('continue-btn').addEventListener('click', () => {
     levelModal.classList.add('hidden');
     gameState = 'PLAYING';
     confettis = [];
+    animate();
 });
+
 document.getElementById('pause-btn').addEventListener('click', () => {
     if (gameState === 'PLAYING') {
         gameState = 'PAUSED';
         pauseMenu.classList.remove('hidden');
     }
 });
+
 document.getElementById('resume-btn').addEventListener('click', () => {
     gameState = 'PLAYING';
     pauseMenu.classList.add('hidden');
     animate();
 });
+
 document.getElementById('restart-btn').addEventListener('click', startGame);
+
+// Init High Scores on load
+updateHighScoreDisplay();
